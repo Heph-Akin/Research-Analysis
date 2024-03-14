@@ -1,0 +1,78 @@
+---
+title: "TBR"
+author: "Hephzibah Akindele"
+date: "2024-01-18"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(stringr)
+library(gtsummary)
+
+# 
+
+molar <- read.csv("/home/akindele/Documents/Data_Science_Projects/R/Research Analysis/molar_clean.csv")
+```
+
+## R Markdown
+
+
+```{r tables, echo=FALSE}
+
+molar %>%
+  filter(TBR == "Crowding") %>%
+  select(TBR, degree) %>%
+  tbl_summary()
+
+molar %>%
+  filter(TBR == "Spacing") %>%
+  select(TBR, degree) %>%
+  tbl_summary()
+
+molar %>%
+  filter(TBR == "Crowding") %>%
+  tbl_summary(by = X3rd.molar) %>%
+  add_p()
+
+molar %>%
+  filter(TBR == "Spacing") %>%
+  tbl_summary(by = X3rd.molar) %>%
+  add_p()
+
+molar %>%
+  select(winter) %>%
+  tbl_summary()
+
+molar %>%
+  filter(TBR == "Crowding") %>%
+  select(X3rd.molar, degree) %>%
+  tbl_summary(by = "X3rd.molar") %>%
+  add_p()
+
+molar %>%
+  filter(TBR == "Spacing") %>%
+  select(X3rd.molar, degree) %>%
+  tbl_summary(by = "X3rd.molar") %>%
+  add_p()
+
+molar %>%
+  select(winter, TBR) %>%
+  tbl_summary(by = "TBR") %>%
+  add_p()
+
+molar %>%
+  filter(TBR == "Crowding") %>%
+  select(winter, degree) %>%
+  tbl_summary(by = "degree") %>%
+  add_p()
+
+molar %>%
+  filter(TBR == "Spacing") %>%
+  select(winter, degree) %>%
+  tbl_summary(by = "degree") %>%
+  add_p()
+
+
+```

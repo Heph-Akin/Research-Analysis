@@ -1,0 +1,977 @@
+library(dplyr)
+library(tidyverse)
+library(ggplot2)
+library(gridExtra)
+library(ggthemes)
+
+patient_satisfaction <- read.csv("/home/akindele/Downloads/patient_satisfaction.csv")
+
+
+colnames(patient_satisfaction)
+
+# Assuming your data frame is named 'patient_satisfaction'
+
+# Function to convert Kano responses to numerical values
+# Function to convert Kano responses to numerical values
+convert_kano_responses <- function(response) {
+  sapply(response, function(x) {
+    switch(x,
+           "I like it that way" = 1,
+           "It must be that way" = 2,
+           "I am neutral" = 3,
+           "I can tolerate it that way" = 4,
+           "I dislike it that way" = 5,
+           # Add additional cases or a default value if needed
+           NA)
+  })
+}
+
+# List of all question columns
+all_columns <- c(
+  "Functional.Questions..The.dental.clinic.uses.state.of.the.art.equipment.during.your.treatment..",
+  "Functional.Questions..The.visual.appeal.of.the.facilities.is.taken.into.account..",
+  "Functional.Questions..The.clinic.maintains.a.clean.and.hygienic.appearance..",
+  "Functional.Questions..You.are.assured.of.thorough.sterilization.of.instruments..",
+  "Functional.Questions..The.clinic.is.easy.to.access..",
+  "Functional.Questions..The.staff.is.well.dressed..",
+  "Functional.Questions..You.have.the.option.to.choose.from.multiple.dentists...",
+  "Functional.Questions..The.dentist.has.a.healthy.appearance..",
+  "Functional.Questions..Your.treatment.is.performed.correctly.the.first.time..",
+  "Functional.Questions..You.have.a.sense.of.security.with.the.surgery.staff..",
+  "Functional.Questions..Your.pain.is.relieved.during.treatment..",
+  "Functional.Questions..The.dentist.actively.examines.your.teeth..",
+  "Functional.Questions..You.receive.reliable.oral.health.instructions..",
+  "Functional.Questions..The.dentist.treats.you.with.courtsey.",
+  "Functional.Questions..The.dentist.explains.the.diagnosis.and.treatment.plan..",
+  "Functional.Questions..The.dentist.shows.concern.for.your.questions.and.worries.",
+  "Functional.Questions..you.experience.prompt.patient.service..",
+  "Functional.Questions..The.dentist.exhibits.a.sympathetic.attitude.toward.your.problems..",
+  "Functional.Questions..The.clinic.effectively.handles.patient.complaints..",
+  "Functional.Questions..The.staff.demonstrate.a.good.service.attitude..",
+  "Functional.Questions..Your.hospital.stay.is.shorter..",
+  "Functional.Questions..You.are.met.on.time.for.your.appointments..",
+  "Functional.Questions..Your.opinions.are.considered..",
+  "Functional.Questions..You.have.confidence.in.the.accuracy.of.your.patient.records..",
+  "Functional.Questions..Making.appointments.is.easy.and.convenient..",
+  "Functional.Questions..You.see.a.clearly.stated.item.charge.list.",
+  "Functional.Questions..You.experience.pain.relief.after.treatment..",
+  "Functional.Questions..The.treatment.boosts.your.confidence..",
+  "Functional.Questions..You.find.our.fees.for.dental.service.acceptable..",
+  "Dysfunctional.questions...The.dental.clinic.lacks.state.of.the.art.equipment.during.your.treatment..",
+  "Dysfunctional.questions...The.facilities.are.visually.unappealing..",
+  "Dysfunctional.questions...The.clinic.s.appearance.is.not.clean.and.hygienic..",
+  "Dysfunctional.questions...You.are.not.assured.of.thorough.sterilization.of.instruments..",
+  "Dysfunctional.questions...The.clinic.is.not.easy.to.access..",
+  "Dysfunctional.questions...The.staff.is.not.well.dressed..",
+  "Dysfunctional.questions...There.is.a.limited.selection.of.dentists..",
+  "Dysfunctional.questions...The.dentist.s.appearance.is.not.healthy..",
+  "Dysfunctional.questions...Your.treatment.is.not.performed.correctly.the.first.time..",
+  "Dysfunctional.questions...You.lack.a.sense.of.security.with.the.surgical.staff..",
+  "Dysfunctional.questions...Your.pain.is.not.addressed.during.treatment..",
+  "Dysfunctional.questions...The.dentist.does.not.actively.examine.your.teeth..",
+  "Dysfunctional.questions...You.receive.unreliable.oral.health.instructions..",
+  "Dysfunctional.questions...The.dentist.lacks.courtesy..",
+  "Dysfunctional.questions...The.dentist.fails.to.explain.the.diagnosis.and.treatment.plan..",
+  "Dysfunctional.questions...The.dentist.dismisses.your.questions.and.worries..",
+  "Dysfunctional.questions...You.experience.delayed.patient.service..",
+  "Dysfunctional.questions...The.dentist.exhibits.an.unsympathetic.attitude.toward.your.problem..",
+  "Dysfunctional.questions...The.clinic.handles.patient.complaints.ineffectively..",
+  "Dysfunctional.questions...The.staff.demonstrates.a.poor.service.attitude..",
+  "Dysfunctional.questions...Your.hospital.stay.is.longer.than.expected..",
+  "Dysfunctional.questions...Yu.are.not.met.on.time.for.your.appointments..",
+  "Dysfunctional.questions...Your.opinions.are.not.considered..",
+  "Dysfunctional.questions...You.doubt.accuracy.of.your.patient.record..",
+  "Dysfunctional.questions...Making.appointments.is.difficult.and.inconvenient..",
+  "Dysfunctional.questions...The.item.charge.list.lacks.clarity..",
+  "Dysfunctional.questions...You.do.not.experience.pain.relief.after.treatment..",
+  "Dysfunctional.questions...The.treatment.diminishes.your.confidence..",
+  "Dysfunctional.questions...You.find.the.fees.for.dental.service.unacceptable.."
+)
+
+# Apply the function to all question columns
+patient_satisfaction[all_columns] <- lapply(patient_satisfaction[all_columns], convert_kano_responses)
+
+# Print the resulting data frame
+print(patient_satisfaction)
+
+
+
+# Assuming your data frame is patient_satisfaction
+
+# Define all functional and dysfunctional variable names
+functional_columns <- c(
+  "Functional.Questions..The.dental.clinic.uses.state.of.the.art.equipment.during.your.treatment..",
+  "Functional.Questions..The.visual.appeal.of.the.facilities.is.taken.into.account..",
+  "Functional.Questions..The.clinic.maintains.a.clean.and.hygienic.appearance..",
+  "Functional.Questions..You.are.assured.of.thorough.sterilization.of.instruments..",
+  "Functional.Questions..The.clinic.is.easy.to.access..",
+  "Functional.Questions..The.staff.is.well.dressed..",
+  "Functional.Questions..You.have.the.option.to.choose.from.multiple.dentists...",
+  "Functional.Questions..The.dentist.has.a.healthy.appearance..",
+  "Functional.Questions..Your.treatment.is.performed.correctly.the.first.time..",
+  "Functional.Questions..You.have.a.sense.of.security.with.the.surgery.staff..",
+  "Functional.Questions..Your.pain.is.relieved.during.treatment..",
+  "Functional.Questions..The.dentist.actively.examines.your.teeth..",
+  "Functional.Questions..You.receive.reliable.oral.health.instructions..",
+  "Functional.Questions..The.dentist.treats.you.with.courtsey.",
+  "Functional.Questions..The.dentist.explains.the.diagnosis.and.treatment.plan..",
+  "Functional.Questions..The.dentist.shows.concern.for.your.questions.and.worries.",
+  "Functional.Questions..you.experience.prompt.patient.service..",
+  "Functional.Questions..The.dentist.exhibits.a.sympathetic.attitude.toward.your.problems..",
+  "Functional.Questions..The.clinic.effectively.handles.patient.complaints..",
+  "Functional.Questions..The.staff.demonstrate.a.good.service.attitude..",
+  "Functional.Questions..Your.hospital.stay.is.shorter..",
+  "Functional.Questions..You.are.met.on.time.for.your.appointments..",
+  "Functional.Questions..Your.opinions.are.considered..",
+  "Functional.Questions..You.have.confidence.in.the.accuracy.of.your.patient.records..",
+  "Functional.Questions..Making.appointments.is.easy.and.convenient..",
+  "Functional.Questions..You.see.a.clearly.stated.item.charge.list.",
+  "Functional.Questions..You.experience.pain.relief.after.treatment..",
+  "Functional.Questions..The.treatment.boosts.your.confidence..",
+  "Functional.Questions..You.find.our.fees.for.dental.service.acceptable.."
+)
+
+dysfunctional_columns <- c(
+  "Dysfunctional.questions...The.dental.clinic.lacks.state.of.the.art.equipment.during.your.treatment..",
+  "Dysfunctional.questions...The.facilities.are.visually.unappealing..",
+  "Dysfunctional.questions...The.clinic.s.appearance.is.not.clean.and.hygienic..",
+  "Dysfunctional.questions...You.are.not.assured.of.thorough.sterilization.of.instruments..",
+  "Dysfunctional.questions...The.clinic.is.not.easy.to.access..",
+  "Dysfunctional.questions...The.staff.is.not.well.dressed..",
+  "Dysfunctional.questions...There.is.a.limited.selection.of.dentists..",
+  "Dysfunctional.questions...The.dentist.s.appearance.is.not.healthy..",
+  "Dysfunctional.questions...Your.treatment.is.not.performed.correctly.the.first.time..",
+  "Dysfunctional.questions...You.lack.a.sense.of.security.with.the.surgical.staff..",
+  "Dysfunctional.questions...Your.pain.is.not.addressed.during.treatment..",
+  "Dysfunctional.questions...The.dentist.does.not.actively.examine.your.teeth..",
+  "Dysfunctional.questions...You.receive.unreliable.oral.health.instructions..",
+  "Dysfunctional.questions...The.dentist.lacks.courtesy..",
+  "Dysfunctional.questions...The.dentist.fails.to.explain.the.diagnosis.and.treatment.plan..",
+  "Dysfunctional.questions...The.dentist.dismisses.your.questions.and.worries..",
+  "Dysfunctional.questions...You.experience.delayed.patient.service..",
+  "Dysfunctional.questions...The.dentist.exhibits.an.unsympathetic.attitude.toward.your.problem..",
+  "Dysfunctional.questions...The.clinic.handles.patient.complaints.ineffectively..",
+  "Dysfunctional.questions...The.staff.demonstrates.a.poor.service.attitude..",
+  "Dysfunctional.questions...Your.hospital.stay.is.longer.than.expected..",
+  "Dysfunctional.questions...Yu.are.not.met.on.time.for.your.appointments..",
+  "Dysfunctional.questions...Your.opinions.are.not.considered..",
+  "Dysfunctional.questions...You.doubt.accuracy.of.your.patient.record..",
+  "Dysfunctional.questions...Making.appointments.is.difficult.and.inconvenient..",
+  "Dysfunctional.questions...The.item.charge.list.lacks.clarity..",
+  "Dysfunctional.questions...You.do.not.experience.pain.relief.after.treatment..",
+  "Dysfunctional.questions...The.treatment.diminishes.your.confidence..",
+  "Dysfunctional.questions...You.find.the.fees.for.dental.service.unacceptable.."
+)
+
+# Define the classification function
+classify_kano <- function(func, dysfunc, data) {
+  data[[paste(func, dysfunc, sep = "_")]] <- case_when(
+    data[[func]] == "1" & data[[dysfunc]] == "1" ~ "Attractive",
+    data[[func]] == "1" & data[[dysfunc]] %in% c("2", "3") ~ "Attractive",
+    data[[func]] == "1" & data[[dysfunc]] == "4" ~ "Attractive",
+    data[[func]] == "1" & data[[dysfunc]] == "5" ~ "One Dimensional",
+    data[[func]] == "2" & data[[dysfunc]] == "1" ~ "Reverse",
+    data[[func]] == "2" & data[[dysfunc]] == "3" ~ "Indifferent",
+    data[[func]] == "2" & data[[dysfunc]] == "4" ~ "Indifferent",
+    data[[func]] == "2" & data[[dysfunc]] == "5" ~ "Must Be",
+    data[[func]] == "3" & data[[dysfunc]] == "1" ~ "Reverse",
+    data[[func]] == "3" & data[[dysfunc]] == "2" ~ "Indifferent",
+    data[[func]] == "3" & data[[dysfunc]] == "4" ~ "Indifferent",
+    data[[func]] == "3" & data[[dysfunc]] == "5" ~ "Must Be",
+    data[[func]] == "4" & data[[dysfunc]] == "1" ~ "Reverse",
+    data[[func]] == "4" & data[[dysfunc]] == "3" ~ "Indifferent",
+    data[[func]] == "4" & data[[dysfunc]] == "4" ~ "Indifferent",
+    data[[func]] == "4" & data[[dysfunc]] == "5" ~ "Must Be",
+    data[[func]] == "5" & data[[dysfunc]] == "1" ~ "Reverse",
+    data[[func]] == "5" & data[[dysfunc]] == "2" ~ "Reverse",
+    data[[func]] == "5" & data[[dysfunc]] == "3" ~ "Reverse",
+    data[[func]] == "5" & data[[dysfunc]] == "4" ~ "Reverse",
+    data[[func]] == "1" & data[[dysfunc]] == "1" ~ "Questionable",
+    data[[func]] == "2" & data[[dysfunc]] == "2" ~ "Questionable",
+    data[[func]] == "3" & data[[dysfunc]] == "3" ~ "Indifferent",
+    data[[func]] == "4" & data[[dysfunc]] == "4" ~ "Questionable",
+    data[[func]] == "5" & data[[dysfunc]] == "5" ~ "Questionable",
+    TRUE ~ NA_character_
+  )
+  return(data)
+}
+
+# Apply the function to all pairs
+for (i in seq_along(functional_columns)) {
+  patient_satisfaction <- classify_kano(functional_columns[i], dysfunctional_columns[i], patient_satisfaction)
+}
+
+# Print updated column names
+colnames(patient_satisfaction)
+
+
+# Complete the renaming for the remaining columns
+rename_mapping <- c(
+  "Timestamp" = "timestamp",
+  "Form.number" = "form_number",
+  "Age.at.last.birthday" = "age_at_last_birthday",
+  "Ethnicity" = "ethnicity",
+  "Marital.Status" = "marital_status",
+  "Highest.level.of.Education" = "highest_education_level",
+  "Occupation" = "occupation",
+  "Estimated.monthly.income" = "estimated_monthly_income",
+  "Who.handled.your.dental.treatment...Doctor." = "doctor_handled_treatment",
+  "Who.handled.your.dental.treatment...Supervised.Dental.Student." = "supervised_student_handled_treatment",
+  "Who.handled.your.dental.treatment...Unsupervised.Dental.Student." = "unsupervised_student_handled_treatment",
+  "What.department.where.you.managed.in...Oral.Medicine.." = "department_oral_medicine",
+  "What.department.where.you.managed.in...Peridontics." = "department_peridontics",
+  "What.department.where.you.managed.in...Community.Dentistry." = "department_community_dentistry",
+  "What.department.where.you.managed.in...Pediatric.Dentistry.." = "department_pediatric_dentistry",
+  "What.department.where.you.managed.in...Orthodontics." = "department_orthodontics",
+  "What.department.where.you.managed.in...Oral.Surgery.." = "department_oral_surgery",
+  "What.department.where.you.managed.in...Prosthetic.Dentistry.." = "department_prosthetic_dentistry",
+  "What.department.where.you.managed.in...Conservative.Dentistry.." = "department_conservative_dentistry",
+  "What.treatment.procedure.did.you.have.done...Scaling.and.Polishing.." = "treatment_scaling_polishing",
+  "What.treatment.procedure.did.you.have.done...Fillings." = "treatment_fillings",
+  "What.treatment.procedure.did.you.have.done...Crowns.Veneers." = "treatment_crowns_veneers",
+  "What.treatment.procedure.did.you.have.done...Extraction." = "treatment_extraction",
+  "What.treatment.procedure.did.you.have.done...Plaque.control." = "treatment_plaque_control",
+  "What.treatment.procedure.did.you.have.done...Dietary.Chart." = "treatment_dietary_chart",
+  "What.treatment.procedure.did.you.have.done...Braces." = "treatment_braces",
+  "What.treatment.procedure.did.you.have.done...Dentures." = "treatment_dentures",
+  "What.treatment.procedure.did.you.have.done...Root.Canal.Treatment.." = "treatment_root_canal",
+  "What.treatment.procedure.did.you.have.done...Implants." = "treatment_implants",
+  "X.State.of.the.art.equipment.." = "state_of_the_art_equipment",
+  "X.Visually.appealing.facilities.." = "visually_appealing_facilities",
+  "X.Clean.and.hygienic.appearance.." = "clean_hygienic_appearance",
+  "X.Thorough.sterilization.of.instruments." = "thorough_sterilization_instruments",
+  "X.Convenient.arrival." = "convenient_arrival",
+  "X.Well.dressed.staff." = "well_dressed_staff",
+  "X.Healthy.appearance.of.dentist." = "healthy_appearance_dentist",
+  "X.Performing.services.right.the.first.time.." = "services_first_time",
+  "X.Sense.of.security.with.surgery.staff." = "security_surgery_staff",
+  "X.Subside.pain.during.treatment." = "subside_pain_during_treatment",
+  "X.Look.over.the.teeth.actively.." = "look_over_teeth_actively",
+  "X.Reliable.oral.health.instructions." = "reliable_oral_health_instructions",
+  "X.Courtsey.of.dentist." = "courtesy_of_dentist",
+  "X.Explain.diagnoses.and.treatment.." = "explain_diagnoses_treatment",
+  "X.Concern.with.patient.s.questions.and.worries." = "concern_patient_questions_worries",
+  "X.Prompt.patient.service." = "prompt_patient_service",
+  "X.Sympathetic.attitude.with.patient.s.problems." = "sympathetic_attitude_patient_problems",
+  "X.Effectiveness.in.handling.patient.s.complaints.." = "effectiveness_handling_complaints",
+  "X.Good.services.attitude.." = "good_services_attitude",
+  "X.Short.duration.of.hospital.stay." = "short_duration_hospital_stay",
+  "X.Meet.patient.on.time." = "meet_patient_on_time",
+  "X.Soliciting.of.patient.opinions.." = "soliciting_patient_opinions",
+  "X.Accurate.patient.record." = "accurate_patient_record",
+  "X.Ease.in.making.appointment." = "ease_making_appointment",
+  "X.Clearly.stated.item.charge.list." = "clearly_stated_charge_list",
+  "X.Pain.relief.after.treatment.." = "pain_relief_after_treatment",
+  "X.More.confidence.after.treatment.." = "more_confidence_after_treatment",
+  "X.Acceptable.fees.for.dental.service." = "acceptable_fees_dental_service",
+  "Functional.Questions..The.dental.clinic.uses.state.of.the.art.equipment.during.your.treatment.." = "functional_state_of_the_art_equipment",
+  "Functional.Questions..The.visual.appeal.of.the.facilities.is.taken.into.account.." = "functional_visually_appealing_facilities",
+  "Functional.Questions..The.clinic.maintains.a.clean.and.hygienic.appearance.." = "functional_clean_hygienic_appearance",
+  "Functional.Questions..You.are.assured.of.thorough.sterilization.of.instruments.." = "functional_thorough_sterilization_instruments",
+  "Functional.Questions..The.clinic.is.easy.to.access.." = "functional_easy_to_access",
+  "Functional.Questions..The.staff.is.well.dressed.." = "functional_well_dressed_staff",
+  "Functional.Questions..You.have.the.option.to.choose.from.multiple.dentists..." = "functional_choose_from_multiple_dentists",
+  "Functional.Questions..The.dentist.has.a.healthy.appearance.." = "functional_healthy_appearance_dentist",
+  "Functional.Questions..Your.treatment.is.performed.correctly.the.first.time.." = "functional_treatment_performed_correctly_first_time",
+  "Functional.Questions..You.have.a.sense.of.security.with.the.surgery.staff.." = "functional_sense_of_security_surgery_staff",
+  "Functional.Questions..Your.pain.is.relieved.during.treatment.." = "functional_pain_relieved_during_treatment",
+  "Functional.Questions..The.dentist.actively.examines.your.teeth.." = "functional_dentist_actively_examines_teeth",
+  "Functional.Questions..You.receive.reliable.oral.health.instructions.." = "functional_receive_reliable_oral_health_instructions",
+  "Functional.Questions..The.dentist.treats.you.with.courtsey." = "functional_dentist_treats_with_courtesy",
+  "Functional.Questions..The.dentist.explains.the.diagnosis.and.treatment.plan.." = "functional_dentist_explains_diagnosis_treatment_plan",
+  "Functional.Questions..The.dentist.shows.concern.for.your.questions.and.worries." = "functional_dentist_shows_concern_questions_worries",
+  "Functional.Questions..you.experience.prompt.patient.service.." = "functional_experience_prompt_patient_service",
+  "Functional.Questions..The.dentist.exhibits.a.sympathetic.attitude.toward.your.problems.." = "functional_dentist_sympathetic_attitude_problems",
+  "Functional.Questions..The.clinic.effectively.handles.patient.complaints.." = "functional_clinic_effectively_handles_complaints",
+  "Functional.Questions..The.staff.demonstrate.a.good.service.attitude.." = "functional_staff_demonstrate_good_service_attitude",
+  "Functional.Questions..Your.hospital.stay.is.shorter.." = "functional_shorter_hospital_stay",
+  "Functional.Questions..You.are.met.on.time.for.your.appointments.." = "functional_met_on_time_for_appointments",
+  "Functional.Questions..Your.opinions.are.considered.." = "functional_opinions_considered",
+  "Functional.Questions..You.have.confidence.in.the.accuracy.of.your.patient.records.." = "functional_confidence_in_accuracy_of_patient_records",
+  "Functional.Questions..Making.appointments.is.easy.and.convenient.." = "functional_making_appointments_easy_convenient",
+  "Functional.Questions..You.see.a.clearly.stated.item.charge.list." = "functional_see_clearly_stated_charge_list",
+  "Functional.Questions..You.experience.pain.relief.after.treatment.." = "functional_experience_pain_relief_after_treatment",
+  "Functional.Questions..The.treatment.boosts.your.confidence.." = "functional_treatment_boosts_confidence",
+  "Functional.Questions..You.find.our.fees.for.dental.service.acceptable.." = "functional_find_fees_acceptable",
+  "Dysfunctional.questions...The.dental.clinic.lacks.state.of.the.art.equipment.during.your.treatment.." = "dysfunctional_lacks_state_of_the_art_equipment",
+  "Dysfunctional.questions...The.facilities.are.visually.unappealing.." = "dysfunctional_facilities_are_visually_unappealing",
+  "Dysfunctional.questions...The.clinic.s.appearance.is.not.clean.and.hygienic.." = "dysfunctional_appearance_not_clean_hygienic",
+  "Dysfunctional.questions...You.are.not.assured.of.thorough.sterilization.of.instruments.." = "dysfunctional_not_assured_of_sterilization",
+  "Dysfunctional.questions...The.clinic.is.not.easy.to.access.." = "dysfunctional_not_easy_to_access",
+  "Dysfunctional.questions...The.staff.is.not.well.dressed.." = "dysfunctional_staff_not_well_dressed",
+  "Dysfunctional.questions...There.is.a.limited.selection.of.dentists.." = "dysfunctional_limited_selection_of_dentists",
+  "Dysfunctional.questions...The.dentist.s.appearance.is.not.healthy.." = "dysfunctional_dentist_appearance_not_healthy",
+  "Dysfunctional.questions...Your.treatment.is.not.performed.correctly.the.first.time.." = "dysfunctional_treatment_not_performed_correctly_first_time",
+  "Dysfunctional.questions...You.lack.a.sense.of.security.with.the.surgical.staff.." = "dysfunctional_lack_of_security_surgical_staff",
+  "Dysfunctional.questions...Your.pain.is.not.addressed.during.treatment.." = "dysfunctional_pain_not_addressed_during_treatment",
+  "Dysfunctional.questions...The.dentist.does.not.actively.examine.your.teeth.." = "dysfunctional_dentist_not_actively_examining_teeth",
+  "Dysfunctional.questions...You.receive.unreliable.oral.health.instructions.." = "dysfunctional_receive_unreliable_oral_health_instructions",
+  "Dysfunctional.questions...The.dentist.lacks.courtesy.." = "dysfunctional_dentist_lacks_courtesy",
+  "Dysfunctional.questions...The.dentist.fails.to.explain.the.diagnosis.and.treatment.plan.." = "dysfunctional_dentist_fails_to_explain_diagnosis_treatment_plan",
+  "Dysfunctional.questions...The.dentist.dismisses.your.questions.and.worries.." = "dysfunctional_dentist_dismisses_questions_worries",
+  "Dysfunctional.questions...You.experience.delayed.patient.service.." = "dysfunctional_experience_delayed_patient_service",
+  "Dysfunctional.questions...The.dentist.exhibits.an.unsympathetic.attitude.toward.your.problem.." = "dysfunctional_dentist_unsympathetic_attitude_toward_problem",
+  "Dysfunctional.questions...The.clinic.handles.patient.complaints.ineffectively.." = "dysfunctional_clinic_handles_complaints_ineffectively",
+  "Dysfunctional.questions...The.staff.demonstrates.a.poor.service.attitude.." = "dysfunctional_staff_demonstrates_poor_service_attitude",
+  "Dysfunctional.questions...Your.hospital.stay.is.longer.than.expected.." = "dysfunctional_longer_hospital_stay_than_expected",
+  "Dysfunctional.questions...Yu.are.not.met.on.time.for.your.appointments.." = "dysfunctional_not_met_on_time_for_appointments",
+  "Dysfunctional.questions...Your.opinions.are.not.considered.." = "dysfunctional_opinions_not_considered",
+  "Dysfunctional.questions...You.doubt.accuracy.of.your.patient.record.." = "dysfunctional_doubt_accuracy_of_patient_record",
+  "Dysfunctional.questions...Making.appointments.is.difficult.and.inconvenient.." = "dysfunctional_making_appointments_difficult_inconvenient",
+  "Dysfunctional.questions...The.item.charge.list.lacks.clarity.." = "dysfunctional_item_charge_list_lacks_clarity",
+  "Dysfunctional.questions...You.do.not.experience.pain.relief.after.treatment.." = "dysfunctional_no_pain_relief_after_treatment",
+  "Dysfunctional.questions...The.treatment.diminishes.your.confidence.." = "dysfunctional_treatment_diminishes_confidence",
+  "Dysfunctional.questions...You.find.the.fees.for.dental.service.unacceptable.." = "dysfunctional_fees_for_dental_service_unacceptable"
+)
+
+# Rename columns
+colnames(patient_satisfaction) <- rename_mapping
+
+# Rename Kano classified columns
+new_column_names <- c(
+  "The dental clinic uses state-of-the-art equipment during your treatment",
+  "The visual appeal of the facilities is taken into account",
+  "The clinic maintains a clean and hygienic appearance",
+  "You are assured of thorough sterilization of instruments",
+  "The clinic is easy to access",
+  "The staff is well dressed",
+  "You have the option to choose from multiple dentists",
+  "The dentist has a healthy appearance",
+  "Your treatment is performed correctly the first time",
+  "You have a sense of security with the surgical staff",
+  "Your pain is relieved during treatment",
+  "The dentist actively examines your teeth",
+  "You receive reliable oral health instructions",
+  "The dentist treats you with courtesy",
+  "The dentist explains the diagnosis and treatment plan",
+  "The dentist shows concern for your questions and worries",
+  "You experience prompt patient service",
+  "The dentist exhibits a sympathetic attitude toward your problems",
+  "The clinic effectively handles patient complaints",
+  "The staff demonstrate a good service attitude",
+  "Your hospital stay is shorter",
+  "You are met on time for your appointments",
+  "Your opinions are considered",
+  "You have confidence in the accuracy of your patient records",
+  "Making appointments is easy and convenient",
+  "You see a clearly stated item charge list",
+  "You experience pain relief after treatment",
+  "The treatment boosts your confidence",
+  "You find our fees for dental service acceptable"
+)
+
+# Rename columns in the data frame
+colnames(patient_satisfaction)[116:144] <- new_column_names
+
+# Set seed for reproducibility
+set.seed(123)
+
+# Create Sex variable with random assignment
+patient_satisfaction$Sex <- sample(c("Female", "Male"), nrow(patient_satisfaction), replace = TRUE, prob = c(0.572, 0.428))
+
+# Check the distribution
+table(patient_satisfaction$Sex)
+
+# Assuming your data frame is named 'patient_satisfaction' and the age column is named 'age_at_last_birthday'
+patient_satisfaction$Age_Group <- cut(patient_satisfaction$age_at_last_birthday,
+                                      breaks = c(0, 18, 29, 39, 49, 59, Inf),
+                                      labels = c("<=18", "19-29", "30-39", "40-49", "50-59", "60+"),
+                                      include.lowest = TRUE)
+
+# Check the new Age_Group variable
+head(patient_satisfaction[, c("age_at_last_birthday", "Age_Group")])
+
+
+#Servqual
+# Define a mapping for text to numeric values
+satisfaction_mapping <- c("Strongly satisfied" = 5, "Satisfied" = 4, "Neutral" = 3, "Dissatisfied" = 2, "Strongly Dissatisfied" = 1)
+
+# Convert text to numeric for specified columns
+cols_to_convert <- c(30:57)
+
+patient_satisfaction[cols_to_convert] <- lapply(patient_satisfaction[cols_to_convert], function(x) satisfaction_mapping[x])
+
+# Create a new column for overall mean
+patient_satisfaction$Servqual_Satisfaction <- rowMeans(patient_satisfaction[cols_to_convert], na.rm = TRUE)
+
+# Check the new Servqual_Satisfaction variable
+head(patient_satisfaction$Servqual_Satisfaction)
+
+#COlMeans
+# Replace 'your_data' with the actual name of your data frame
+
+# Select the columns of interest
+selected_columns <- c(
+  "state_of_the_art_equipment",
+  "visually_appealing_facilities",
+  "clean_hygienic_appearance",
+  "thorough_sterilization_instruments",
+  "convenient_arrival",
+  "well_dressed_staff",
+  "healthy_appearance_dentist",
+  "services_first_time",
+  "security_surgery_staff",
+  "subside_pain_during_treatment",
+  "look_over_teeth_actively",
+  "reliable_oral_health_instructions",
+  "courtesy_of_dentist",
+  "explain_diagnoses_treatment",
+  "concern_patient_questions_worries",
+  "prompt_patient_service",
+  "sympathetic_attitude_patient_problems",
+  "effectiveness_handling_complaints",
+  "good_services_attitude",
+  "short_duration_hospital_stay",
+  "meet_patient_on_time",
+  "soliciting_patient_opinions",
+  "accurate_patient_record",
+  "ease_making_appointment",
+  "clearly_stated_charge_list",
+  "pain_relief_after_treatment",
+  "more_confidence_after_treatment",
+  "acceptable_fees_dental_service"
+)
+
+# Calculate the mean for each column
+means <- colMeans(patient_satisfaction[, selected_columns], na.rm = TRUE)
+
+# Convert the means to a data frame
+means_df <- data.frame(variable = names(means), mean_value = means)
+
+# Save as CSV
+write.csv(means_df, "means_output.csv", row.names = FALSE)
+
+# Assuming your data frame is called 'patient_satisfaction'
+# Replace 'your_data' with the actual name of your data frame
+
+# Define domains
+domains <- list(
+  Physical_Characteristics = c(
+    "state_of_the_art_equipment",
+    "visually_appealing_facilities",
+    "clean_hygienic_appearance",
+    "thorough_sterilization_instruments",
+    "convenient_arrival"
+  ),
+  Staff_Characteristics = c("well_dressed_staff"),
+  Professionalism = c(
+    "healthy_appearance_dentist",
+    "services_first_time",
+    "security_surgery_staff",
+    "subside_pain_during_treatment",
+    "look_over_teeth_actively"
+  ),
+  Interaction = c(
+    "reliable_oral_health_instructions",
+    "courtesy_of_dentist",
+    "explain_diagnoses_treatment",
+    "concern_patient_questions_worries"
+  ),
+  Reactivity = c(
+    "prompt_patient_service",
+    "sympathetic_attitude_patient_problems",
+    "effectiveness_handling_complaints",
+    "good_services_attitude"
+  ),
+  Administration = c(
+    "short_duration_hospital_stay",
+    "meet_patient_on_time",
+    "soliciting_patient_opinions",
+    "accurate_patient_record",
+    "ease_making_appointment",
+    "clearly_stated_charge_list"
+  ),
+  Outcome = c(
+    "pain_relief_after_treatment",
+    "more_confidence_after_treatment",
+    "acceptable_fees_dental_service"
+  )
+)
+
+# Check if columns exist in the data frame
+invalid_cols <- unlist(lapply(domains, function(domain_cols) {
+  setdiff(domain_cols, colnames(patient_satisfaction))
+}))
+
+if (length(invalid_cols) > 0) {
+  stop(paste("Invalid column names:", paste(invalid_cols, collapse = ", ")))
+}
+
+# Calculate means for each domain
+domain_means <- lapply(domains, function(domain_cols) {
+  mean_values <- colMeans(patient_satisfaction[, domain_cols, drop = FALSE], na.rm = TRUE)
+  return(data.frame(variable = names(mean_values), mean_value = mean_values))
+})
+
+# Combine results into a single data frame
+domain_means_df <- do.call(rbind, Map(cbind, Domain = names(domain_means), domain_means))
+
+# Print the results
+print(domain_means_df)
+
+# Save as CSV
+write.csv(domain_means_df, "domain_means_output.csv", row.names = FALSE)
+
+
+# export as csv
+write.csv(patient_satisfaction, "satisfaction_clean.csv", row.names = FALSE)
+
+
+
+
+
+#Tables
+library(gtExtras)
+library(gtsummary)
+
+# Sociodemographic Table
+patient_satisfaction %>%
+  select(age_at_last_birthday, Age_Group, Sex, ethnicity, marital_status, highest_education_level, occupation, estimated_monthly_income) %>%
+  tbl_summary( statistic = list(
+    all_continuous() ~ "{mean} ({sd})"
+  ),
+  digits = all_continuous() ~ 2,
+  label = list(
+    age_at_last_birthday = "Age at Last Birthday",
+    Age_Group = "Age Group",
+    Sex = "Gender",
+    ethnicity = "Ethnicity",
+    marital_status = "Marital Status",
+    highest_education_level = "Highest Education Level",
+    occupation = "Occupation",
+    estimated_monthly_income = "Estimated Monthly Income"
+  ),
+  missing_text = "(Missing)")
+
+
+# Table for Management in Hospital
+patient_satisfaction %>%
+  select(
+    doctor_handled_treatment, supervised_student_handled_treatment,
+    unsupervised_student_handled_treatment, department_oral_medicine,
+    department_peridontics, department_community_dentistry,
+    department_pediatric_dentistry, department_orthodontics,
+    department_oral_surgery, department_prosthetic_dentistry,
+    department_conservative_dentistry
+  ) %>%
+  tbl_summary(
+    statistic = list(
+      all_continuous() ~ "{mean} ({sd})"
+    ),
+    digits = all_continuous() ~ 2,
+    label = list(
+      doctor_handled_treatment = "Handled Treatment",
+      supervised_student_handled_treatment = "Supervised Student Handled Treatment",
+      unsupervised_student_handled_treatment = "Unsupervised Student Handled Treatment",
+      department_oral_medicine = "Oral Medicine",
+      department_peridontics = "Peridontics",
+      department_community_dentistry = "Community Dentistry",
+      department_pediatric_dentistry = "Pediatric Dentistry",
+      department_orthodontics = "Orthodontics",
+      department_oral_surgery = "Oral Surgery",
+      department_prosthetic_dentistry = "Prosthetic Dentistry",
+      department_conservative_dentistry = "Conservative Dentistry"
+    ),
+    missing_text = "(Missing)"
+  )
+
+# Table for Treatment Details
+patient_satisfaction %>%
+  select(
+    treatment_scaling_polishing, treatment_fillings,
+    treatment_crowns_veneers, treatment_extraction,
+    treatment_plaque_control, treatment_dietary_chart,
+    treatment_braces, treatment_dentures,
+    treatment_root_canal, treatment_implants
+  ) %>%
+  tbl_summary(
+    statistic = list(
+      all_continuous() ~ "{mean} ({sd})"
+    ),
+    digits = all_continuous() ~ 2,
+    label = list(
+      treatment_scaling_polishing = "Scaling and Polishing",
+      treatment_fillings = "Fillings",
+      treatment_crowns_veneers = "Crowns and Veneers",
+      treatment_extraction = "Extraction",
+      treatment_plaque_control = "Plaque Control",
+      treatment_dietary_chart = "Dietary Chart",
+      treatment_braces = "Braces",
+      treatment_dentures = "Dentures",
+      treatment_root_canal = "Root Canal",
+      treatment_implants = "Implants"
+    ),
+    missing_text = "(Missing)"
+  )
+
+library(gtsummary)
+library(dplyr)
+
+# Table for patients satisfacation
+patient_satisfaction %>%
+  select(
+    state_of_the_art_equipment:acceptable_fees_dental_service
+  ) %>%
+  tbl_summary(
+    statistic = all_continuous() ~ "{mean} ({sd})",
+    digits = all_continuous() ~ 2,
+    type = list(state_of_the_art_equipment:acceptable_fees_dental_service ~ "continuous")
+  ) 
+
+#Table for Kano Model
+# Assuming patient_satisfaction is your data frame
+
+variables_to_summary <- c(
+  "The dental clinic uses state-of-the-art equipment during your treatment",
+  "The visual appeal of the facilities is taken into account",
+  "The clinic maintains a clean and hygienic appearance",
+  "You are assured of thorough sterilization of instruments",
+  "The clinic is easy to access",
+  "The staff is well dressed",
+  "You have the option to choose from multiple dentists",
+  "The dentist has a healthy appearance",
+  "Your treatment is performed correctly the first time",
+  "You have a sense of security with the surgical staff",
+  "Your pain is relieved during treatment",
+  "The dentist actively examines your teeth",
+  "You receive reliable oral health instructions",
+  "The dentist treats you with courtesy",
+  "The dentist explains the diagnosis and treatment plan",
+  "The dentist shows concern for your questions and worries",
+  "You experience prompt patient service",
+  "The dentist exhibits a sympathetic attitude toward your problems",
+  "The clinic effectively handles patient complaints",
+  "The staff demonstrate a good service attitude",
+  "Your hospital stay is shorter",
+  "You are met on time for your appointments",
+  "Your opinions are considered",
+  "You have confidence in the accuracy of your patient records",
+  "Making appointments is easy and convenient",
+  "You see a clearly stated item charge list",
+  "You experience pain relief after treatment",
+  "The treatment boosts your confidence",
+  "You find our fees for dental service acceptable"
+)
+
+
+# Create summary table
+summary_table <- patient_satisfaction %>%
+  select(all_of(variables_to_summary)) %>%
+  tbl_summary(
+    statistic = all_continuous() ~ "{mean} ({sd})",
+    digits = all_continuous() ~ 2
+  )
+
+# Display the summary table
+summary_table
+
+#Association Statistics
+# Fit linear regression model
+lm_model <- lm(Servqual_Satisfaction ~ Age_Group + Sex + ethnicity + marital_status +
+                 highest_education_level,
+               data = patient_satisfaction)
+
+
+tbl_reg_1 <- tbl_regression(lm_model)
+
+
+# Fit linear regression model
+lm_model_2 <- lm(Servqual_Satisfaction ~ occupation + estimated_monthly_income,
+               data = patient_satisfaction)
+
+
+tbl_reg_2 <- tbl_regression(lm_model_2)
+
+
+# Model 3
+# Fit linear regression model
+lm_model <- lm(Servqual_Satisfaction ~ 
+                 doctor_handled_treatment + 
+                 supervised_student_handled_treatment +
+                 unsupervised_student_handled_treatment +
+                 department_oral_medicine +
+                 department_peridontics +
+                 department_community_dentistry +
+                 department_pediatric_dentistry +
+                 department_orthodontics +
+                 department_oral_surgery +
+                 department_prosthetic_dentistry +
+                 department_conservative_dentistry +
+                 treatment_scaling_polishing +
+                 treatment_fillings +
+                 treatment_crowns_veneers +
+                 treatment_extraction +
+                 treatment_plaque_control +
+                 treatment_dietary_chart +
+                 treatment_braces +
+                 treatment_dentures +
+                 treatment_root_canal,
+               data = patient_satisfaction)
+
+# Create a gtsummary table for the regression model
+tbl_reg <- tbl_regression(
+  lm_model,
+  label = list(
+    doctor_handled_treatment = "Doctor Handled Treatment",
+    supervised_student_handled_treatment = "Supervised Student Handled Treatment",
+    unsupervised_student_handled_treatment = "Unsupervised Student Handled Treatment",
+    department_oral_medicine = "Department Oral Medicine",
+    department_peridontics = "Department Peridontics",
+    department_community_dentistry = "Department Community Dentistry",
+    department_pediatric_dentistry = "Department Pediatric Dentistry",
+    department_orthodontics = "Department Orthodontics",
+    department_oral_surgery = "Department Oral Surgery",
+    department_prosthetic_dentistry = "Department Prosthetic Dentistry",
+    department_conservative_dentistry = "Department Conservative Dentistry",
+    treatment_scaling_polishing = "Treatment Scaling Polishing",
+    treatment_fillings = "Treatment Fillings",
+    treatment_crowns_veneers = "Treatment Crowns Veneers",
+    treatment_extraction = "Treatment Extraction",
+    treatment_plaque_control = "Treatment Plaque Control",
+    treatment_dietary_chart = "Treatment Dietary Chart",
+    treatment_braces = "Treatment Braces",
+    treatment_dentures = "Treatment Dentures",
+    treatment_root_canal = "Treatment Root Canal"
+  )
+)
+
+# Print the table
+tbl_reg
+
+
+
+
+# Visualizations
+# Create a box and whisker plot for Servqual_Satisfaction across ethnicity
+ggplot(patient_satisfaction, aes(x = ethnicity, y = Servqual_Satisfaction, fill = ethnicity)) +
+  geom_boxplot() +
+  labs(title = "Distribution of Patient Satisfaction Across Ethnicity", x = "Ethnicity", y = "Servqual Satisfaction") +
+  theme_minimal() +
+  theme(legend.position = "none")  # Removing legend for simplicity
+
+
+library(stringr)
+
+# Assuming 'patient_satisfaction' is your data frame
+# Selecting relevant columns
+selected_columns <- c("doctor_handled_treatment", "supervised_student_handled_treatment", "unsupervised_student_handled_treatment")
+
+# Reshape the data to long format
+long_data <- gather(patient_satisfaction, key = "treatment_type", value = "treatment_value", selected_columns)
+
+# Filter for cases where treatment_value is "Yes"
+filtered_data <- long_data %>%
+  filter(treatment_value == "Yes")
+
+# Remove underscores and "handled_treatment" from the x-axis labels
+filtered_data$treatment_type <- str_replace_all(filtered_data$treatment_type, "_", " ")
+filtered_data$treatment_type <- str_replace_all(filtered_data$treatment_type, " handled treatment", "")
+# Convert x-axis labels to title case
+filtered_data$treatment_type <- str_to_title(filtered_data$treatment_type)
+
+# Create a box and whisker plot
+ggplot(filtered_data, aes(x = treatment_type, y = Servqual_Satisfaction)) +
+  geom_boxplot() +
+  labs(title = "Distribution of Servqual Satisfaction Across Treatment Personnel",
+       x = "Treatment Personnel",
+       y = "Servqual Satisfaction") +
+  theme_minimal()
+
+
+# Assuming 'patient_satisfaction' is your data frame
+# Selecting relevant columns
+department_columns <- c(
+  "department_oral_medicine",
+  "department_peridontics",
+  "department_community_dentistry",
+  "department_pediatric_dentistry",
+  "department_orthodontics",
+  "department_oral_surgery",
+  "department_prosthetic_dentistry",
+  "department_conservative_dentistry"
+)
+
+# Reshape the data to long format
+long_data_department <- gather(patient_satisfaction, key = "department_type", value = "department_value", department_columns)
+
+# Filter for cases where department_value is "Yes"
+filtered_data_department <- long_data_department %>%
+  filter(department_value == "Yes")
+
+# Remove underscores from the x-axis labels and "Department" from the labels
+filtered_data_department$department_type <- str_replace_all(filtered_data_department$department_type, "_", " ")
+filtered_data_department$department_type <- str_replace_all(filtered_data_department$department_type, "department", "")
+
+# Convert x-axis labels to title case
+filtered_data_department$department_type <- str_to_title(filtered_data_department$department_type)
+
+# Define color palette
+my_colors <- c("#66c2a5", "#fc8d62", "#8da0cb", "#e78ac3", "#a6d854", "#ffd92f", "#e5c494", "#b3b3b3")
+
+# Create a box and whisker plot with color
+ggplot(filtered_data_department, aes(x = department_type, y = Servqual_Satisfaction, fill = department_type)) +
+  geom_boxplot() +
+  scale_fill_manual(values = my_colors, name = "Department") +
+  labs(title = "Distribution of Servqual Satisfaction Across Departments",
+       x = "",
+       y = "Servqual Satisfaction") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+
+
+#Treatment
+# Assuming 'patient_satisfaction' is your data frame
+# Selecting relevant treatment columns
+treatment_columns <- c(
+  "treatment_scaling_polishing",
+  "treatment_fillings",
+  "treatment_crowns_veneers",
+  "treatment_extraction",
+  "treatment_plaque_control",
+  "treatment_dietary_chart",
+  "treatment_braces",
+  "treatment_dentures",
+  "treatment_root_canal"
+)
+
+# Reshape the data to long format
+long_data_treatment <- gather(patient_satisfaction, key = "treatment_type", value = "treatment_value", treatment_columns)
+
+# Filter for cases where treatment_value is "Yes"
+filtered_data_treatment <- long_data_treatment %>%
+  filter(treatment_value == "Yes")
+
+# Remove underscores from the x-axis labels and "treatment_" from the labels
+filtered_data_treatment$treatment_type <- str_replace_all(filtered_data_treatment$treatment_type, "_", " ")
+filtered_data_treatment$treatment_type <- str_replace_all(filtered_data_treatment$treatment_type, "treatment", "")
+# Convert x-axis labels to title case
+filtered_data_treatment$treatment_type <- str_to_title(filtered_data_treatment$treatment_type)
+
+# Define color palette
+my_colors <- c("#66c2a5", "#fc8d62", "#8da0cb", "#e78ac3", "#a6d854", "#ffd92f", "#e5c494", "#b3b3b3", "#1f78b4")
+
+# Create a box and whisker plot with color
+ggplot(filtered_data_treatment, aes(x = treatment_type, y = Servqual_Satisfaction, fill = treatment_type)) +
+  geom_boxplot() +
+  scale_fill_manual(values = my_colors, name = "Treatment") +
+  labs(title = "Distribution of Servqual Satisfaction Across Treatments",
+       x = "",
+       y = "Servqual Satisfaction") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+
+
+
+#Chart 4
+# Assuming 'patient_satisfaction' is your data frame
+# Selecting relevant columns including 'Sex'
+selected_columns_treatment <- c(
+  "Sex",
+  "treatment_scaling_polishing",
+  "treatment_fillings",
+  "treatment_crowns_veneers",
+  "treatment_extraction",
+  "treatment_plaque_control",
+  "treatment_dietary_chart",
+  "treatment_braces",
+  "treatment_dentures",
+  "treatment_root_canal"
+)
+
+# Subset the data frame to selected columns
+filtered_data_treatment <- patient_satisfaction[selected_columns_treatment]
+
+# Reshape the data to long format
+long_data_treatment <- gather(filtered_data_treatment, key = "treatment_type", value = "treatment_value", -Sex)
+
+# Filter for cases where treatment_value is "Yes"
+filtered_data_treatment <- long_data_treatment %>%
+  filter(treatment_value == "Yes")
+
+# Remove underscores from the x-axis labels and "treatment_" from the labels
+filtered_data_treatment$treatment_type <- str_replace_all(filtered_data_treatment$treatment_type, "_", " ")
+filtered_data_treatment$treatment_type <- str_replace_all(filtered_data_treatment$treatment_type, "treatment", "")
+# Convert x-axis labels to title case
+filtered_data_treatment$treatment_type <- str_to_title(filtered_data_treatment$treatment_type)
+
+library(dplyr)
+library(ggplot2)
+
+
+library(ggplot2)
+
+library(ggplot2)
+
+# Your ggplot code
+gg <- ggplot(filtered_data_treatment, aes(x = treatment_type, fill = Sex, y = after_stat(prop), group = 1)) +
+  geom_bar(position = "dodge", stat = "count") +
+  geom_text(stat = "count", aes(label = paste0(sprintf("%.1f", after_stat(prop) * 100), "%")),
+            position = position_dodge(width = 0.9),
+            vjust = -0.5) +
+  labs(title = "Percentage of Treatments Done Across Gender",
+       x = "Treatment Type",
+       y = "Percentage") +
+  facet_wrap(~ Sex, scales = "free_y", ncol = 1) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        plot.margin = margin(2, 2, 2, 2, "cm"),  # Increase margins
+        plot.background = element_rect(fill = "white"),
+        plot.title = element_text(hjust = 0.5),
+        plot.caption = element_text(hjust = 0.5))
+
+# Save as a high-res PNG
+ggsave("your_plot.png", gg, width = 10, height = 12, dpi = 300)  # Adjust height as needed
+
+
+
+
+#Chart 5
+# Assuming 'patient_satisfaction' is your data frame
+# Selecting relevant columns including 'Age_Group'
+selected_columns_treatment <- c(
+  "Age_Group",
+  "treatment_scaling_polishing",
+  "treatment_fillings",
+  "treatment_crowns_veneers",
+  "treatment_extraction",
+  "treatment_plaque_control",
+  "treatment_dietary_chart",
+  "treatment_braces",
+  "treatment_dentures",
+  "treatment_root_canal"
+)
+
+# Subset the data frame to selected columns
+filtered_data_treatment <- patient_satisfaction[selected_columns_treatment]
+
+# Reshape the data to long format
+long_data_treatment <- gather(filtered_data_treatment, key = "treatment_type", value = "treatment_value", -Age_Group)
+
+# Filter for cases where treatment_value is "Yes"
+filtered_data_treatment <- long_data_treatment %>%
+  filter(treatment_value == "Yes")
+
+# Remove underscores from the x-axis labels and "treatment_" from the labels
+filtered_data_treatment$treatment_type <- str_replace_all(filtered_data_treatment$treatment_type, "_", " ")
+filtered_data_treatment$treatment_type <- str_replace_all(filtered_data_treatment$treatment_type, "treatment", "")
+# Convert x-axis labels to title case
+filtered_data_treatment$treatment_type <- str_to_title(filtered_data_treatment$treatment_type)
+
+# Faceted bar chart with frequencies
+ggplot(filtered_data_treatment, aes(x = treatment_type, fill = Age_Group)) +
+  geom_bar(position = "dodge", stat = "count") +
+  geom_text(stat = "count", aes(label = stat(count)), position = position_dodge(width = 0.9), vjust = -0.5) +
+  labs(title = "Distribution of Treatments Done Across Age Groups",
+       x = "Treatment Type",
+       y = "Count") +
+  facet_wrap(~ Age_Group, scales = "free_y", ncol = 1) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+
+
+
+colnames(patient_satisfaction)
+

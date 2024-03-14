@@ -1,0 +1,79 @@
+---
+title: "DAI"
+author: "Hephzibah Akindele"
+date: "2024-02-28"
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+library(dplyr)
+library(tidyverse)
+library(ggplot2)
+library(gridExtra)
+library(ggthemes)
+library(gtsummary)
+library(dplyr)
+
+
+DAI <- read.csv("/home/akindele/Downloads/Ayenakin.csv")
+bacteria <- read.csv("/home/akindele/Downloads/Bacteria.csv")
+
+colnames(DAI)
+bacteria <- bacteria %>%
+  mutate(
+    Visit = case_when(
+      Visit == "1st visit" ~ "Baseline (T0)",
+      Visit == "2nd visit" ~ "1 month (T1)",
+      Visit == "3rd visit" ~ "2 month (T2)",
+      TRUE ~ Visit
+    )
+  )
+
+
+# Assuming your dataset is named DAI
+DAI$DAI.Category <- cut(DAI$DAI.Score, breaks = c(-Inf, 25, 30, 35, Inf),
+                        labels = c("<=25", "26-30", "31-35", ">=36"),
+                        include.lowest = TRUE)
+
+
+```
+
+## R Markdown
+
+```{r tables, echo=FALSE}
+
+
+bacteria %>%
+  filter(Adult.Adolescent == "Adolescent") %>%
+  select(Total.Bacteria.Count, Visit) %>%
+  tbl_summary(by = Visit) 
+
+bacteria %>%
+  filter(Adult.Adolescent == "Adult") %>%
+  select(Total.Bacteria.Count, Visit) %>%
+  tbl_summary(by = Visit) 
+
+bacteria %>%
+  select(Total.Bacteria.Count, Visit) %>%
+  tbl_summary(by = Visit) 
+
+
+DAI %>%
+  distinct(Patient.Number, .keep_all = TRUE) %>%
+  select(Adult.Adolescent, DAI.Score, DAI.Category) %>%
+  tbl_summary(
+    by = Adult.Adolescent,
+    label = list(DAI.Score ~ "DAI Score"),
+    digits = list(DAI.Score ~ 2),
+    statistic = list(DAI.Score ~ "{mean} ± {sd}"),
+    type = list(DAI.Score ~ "continuous")
+  ) %>%
+  add_p(
+    test = DAI.Score ~ "t.test",
+    test.args = DAI.Score ~ list(var.equal = TRUE)
+  )
+
+```
+

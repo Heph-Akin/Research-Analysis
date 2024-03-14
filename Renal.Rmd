@@ -1,0 +1,267 @@
+---
+title: "Renal"
+author: "Hephzibah Akindele"
+date: "2024-03-03"
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(dplyr)
+library(tidyverse)
+library(ggplot2)
+library(gridExtra)
+library(ggthemes)
+library(gtsummary)
+library(dplyr)
+
+
+renal_data <- read.csv("/home/akindele/Documents/Data_Science_Projects/R/Research Analysis/renal_spread.csv")
+
+
+# Merge Cardiovascular Disorders columns
+renal_data$Cardiovascular_Disorders <- as.integer(renal_data$Cardiovascular.Disorders | renal_data$Other.CormobiditiesCardiovascular.Disorders)
+# Merge Metabolic Disorders columns
+renal_data$Metabolic_Disorders <- as.integer(renal_data$Metabolic.Disorders | renal_data$Other.CormobiditiesMetabolic.Disorders)
+
+# Drop the original columns
+renal_data <- renal_data[, !(names(renal_data) %in% c("Cardiovascular.Disorders", "Other.CormobiditiesCardiovascular.Disorders",
+                                                      "Metabolic.Disorders", "Other.CormobiditiesMetabolic.Disorders"))]
+
+colnames(renal_data)
+
+renal_data$Time.Spent.on.dialysis..months. <- as.numeric(renal_data$Time.Spent.on.dialysis..months.)
+
+
+
+renal_data <- renal_data %>%
+  mutate(
+    Occupation = ifelse(Occupation == "", NA, Occupation),
+    Renal.transplant.outcome = ifelse(Renal.transplant.outcome == "", NA, Renal.transplant.outcome),
+    Graft.survival.at.1.year = ifelse(Graft.survival.at.1.year == "", NA, Graft.survival.at.1.year),
+    Graft.survival.at.3.years = ifelse(Graft.survival.at.3.years == "", NA, Graft.survival.at.3.years),
+    Complications.during.hemodialysis = ifelse(Complications.during.hemodialysis == "", "Nil", Complications.during.hemodialysis),
+    Complictions.during.surgery = ifelse(Complictions.during.surgery == "", "Nil", Complictions.during.surgery),
+    Deceased = ifelse(Deceased == "", "No", Deceased)
+  )
+
+
+```
+
+## R Markdown
+
+
+
+```{r tables, echo=FALSE}
+# Create a gtsummary table
+summary_table <- renal_data %>% 
+  select(Age..years., Age_category, Gender, Occupation) %>%
+  tbl_summary(
+    by = NULL,
+    label = list(
+      Age..years. ~ "Age (years)",
+      Age_category ~ "Age Category",
+      Gender ~ "Gender",
+      Occupation ~ "Occupation"
+    ),
+    digits = list(Age..years. ~ 2),
+    statistic = list(Age..years. ~ "{mean} ± {sd}"),
+    missing = "no"
+  )
+
+# Display the table
+summary_table
+
+
+
+variables_of_interest <- c(
+  "Prolonged.analgesic.use",
+  "hx.of.alcohol",
+  "hx.of.tobacco",
+  "Cardiovascular_Disorders",
+  "Metabolic_Disorders",
+  "Other.CormobiditiesAutoimmune.Disorders",
+  "Other.CormobiditiesGastrointestinal.Disorders",
+  "Other.CormobiditiesInfectious.Diseases",
+  "Other.CormobiditiesNeurological.Conditions",
+  "Other.CormobiditiesNil",
+  "Other.CormobiditiesNon.Renal.Genetic.Disorders",
+  "Other.CormobiditiesOncological.Conditions",
+  "Other.CormobiditiesRenal.Disorders",
+  "Other.CormobiditiesRespiratory.Disorders",
+  "Other.CormobiditiesUrological.Conditions"
+)
+
+# Define custom labels for the variables
+labels <- c(
+  "Prolonged.analgesic.use" = "Prolonged Analgesic Use",
+  "hx.of.alcohol" = "History of Alcohol Use",
+  "hx.of.tobacco" = "History of Tobacco Use",
+  "Cardiovascular_Disorders" = "Cardiovascular Disorders",
+  "Metabolic_Disorders" = "Metabolic Disorders",
+  "Other.CormobiditiesAutoimmune.Disorders" = "Autoimmune Disorders",
+  "Other.CormobiditiesGastrointestinal.Disorders" = "Gastrointestinal Disorders",
+  "Other.CormobiditiesInfectious.Diseases" = "Infectious Diseases",
+  "Other.CormobiditiesNeurological.Conditions" = "Neurological Conditions",
+  "Other.CormobiditiesNon.Renal.Genetic.Disorders" = "Non-Renal Genetic Disorders",
+  "Other.CormobiditiesOncological.Conditions" = "Oncological Conditions",
+  "Other.CormobiditiesRenal.Disorders" = "Renal Disorders",
+  "Other.CormobiditiesRespiratory.Disorders" = "Respiratory Disorders",
+  "Other.CormobiditiesUrological.Conditions" = "Urological Conditions"
+)
+
+
+# Create a gtsummary table with custom labels
+summary_table <- tbl_summary(
+  data = renal_data[variables_of_interest],
+  missing = "no",
+  label = labels
+) 
+
+# Display the table
+summary_table
+
+
+
+# Define custom labels for the variables
+labels <- c(
+  "Fem.V" = "Femoral Vein",
+  "SubC.V" = "Subclavian Vein",
+  "IJV" = "Internal Jugular Vein",
+  "Time.Spent.on.dialysis..months." = "Time Spent on Dialysis (months)",
+  "Complications.during.hemodialysis" = "Complications During Hemodialysis",
+  "Complictions.during.surgery" = "Complications During Surgery",
+  "Renal.transplant.outcome" = "Renal Transplant Outcome",
+  "Graft.survival.at.1.year" = "Graft Survival at 1 Year",
+  "Graft.survival.at.3.years" = "Graft Survival at 3 Years",
+  "Deceased" = "Deceased"
+)
+
+# Specify the variables of interest
+variables_of_interest <- c(
+  "Fem.V", "SubC.V", "IJV",
+  "Time.Spent.on.dialysis..months.", "Complications.during.hemodialysis",
+  "Complictions.during.surgery", "Renal.transplant.outcome",
+  "Graft.survival.at.1.year", "Graft.survival.at.3.years",
+  "Deceased"
+)
+summary_table <- tbl_summary(
+  data = renal_data[variables_of_interest],
+  missing = "no",
+  label = labels,
+  digits = list(Time.Spent.on.dialysis..months. ~ 2),
+  statistic = list(Time.Spent.on.dialysis..months. ~ "{mean} ± {sd}")
+) 
+
+# Display the table
+summary_table
+
+
+
+
+renal_data %>%
+  select(Graft.survival.at.1.year, Graft.survival.at.3.years, Deceased, Cardiovascular_Disorders) %>%
+  tbl_summary(by = Cardiovascular_Disorders,
+              percent = "row") %>%
+  add_p()
+
+
+renal_data %>%
+  select(Graft.survival.at.1.year, Graft.survival.at.3.years, Deceased, Metabolic_Disorders) %>%
+  tbl_summary(by = Metabolic_Disorders,
+              percent = "row") %>%
+  add_p()
+
+renal_data %>%
+  select(Graft.survival.at.1.year, Graft.survival.at.3.years, Deceased, IJV) %>%
+  tbl_summary(by = IJV,
+              percent = "row") %>%
+  add_p()
+
+renal_data %>%
+  select(Graft.survival.at.1.year, Graft.survival.at.3.years, Deceased, Fem.V) %>%
+  tbl_summary(by = Fem.V,
+              percent = "row") %>%
+  add_p()
+
+renal_data %>%
+  select(Graft.survival.at.1.year, Graft.survival.at.3.years, Deceased, SubC.V) %>%
+  tbl_summary(by = SubC.V,
+              percent = "row") %>%
+  add_p()
+
+
+
+# Convert Graft.survival.at.1.year and Graft.survival.at.3.years to factors
+renal_data$Graft.survival.at.1.year <- factor(renal_data$Graft.survival.at.1.year)
+renal_data$Graft.survival.at.3.years <- factor(renal_data$Graft.survival.at.3.years)
+renal_data$Graft.survival.at.1.year[is.na(renal_data$Graft.survival.at.1.year)] <- "No"
+renal_data$Graft.survival.at.3.years[is.na(renal_data$Graft.survival.at.3.years)] <- "No"
+
+
+
+# Define custom labels for the variables
+labels <- c(
+  Age_category = "Age Category",
+  Gender = "Gender",
+  Prolonged.analgesic.use = "Prolonged Analgesic Use",
+  hx.of.alcohol = "History of Alcohol Use",
+  hx.of.tobacco = "History of Tobacco Use",
+  Cardiovascular_Disorders = "Cardiovascular Disorders",
+  Metabolic_Disorders = "Metabolic Disorders",
+  Fem.V = "Femoral Vein",
+  SubC.V = "Subclavian Vein",
+  IJV = "Internal Jugular Vein"
+)
+
+# Fit the logistic regression model
+model <- glm(Graft.survival.at.1.year ~ Age_category + Gender +
+               Prolonged.analgesic.use + hx.of.alcohol + hx.of.tobacco +
+               Cardiovascular_Disorders +
+               Metabolic_Disorders,
+             data = renal_data, family = binomial)
+
+# Get the model summary
+summary_table <- tbl_regression(model, label = labels)
+
+# Display the table
+summary_table
+
+# Fit the logistic regression model
+model_additional <- glm(Graft.survival.at.1.year ~ Fem.V + SubC.V + IJV +
+                          Time.Spent.on.dialysis..months.,
+                        data = renal_data, family = binomial)
+
+# Get the model summary
+summary_table_additional <- tbl_regression(model_additional, label = labels)
+
+# Display the table
+summary_table_additional
+
+# Fit the logistic regression model for 3 years
+model_3_years <- glm(Graft.survival.at.3.years ~ Age_category + Gender +
+                       Prolonged.analgesic.use + hx.of.alcohol + hx.of.tobacco + Metabolic_Disorders + Cardiovascular_Disorders,
+                     data = renal_data, family = binomial)
+
+# Get the model summary
+summary_table_3_years <- tbl_regression(model_3_years, label = labels)
+
+# Display the table
+summary_table_3_years
+
+# Fit the logistic regression model for 3 years with additional variables
+model_additional_3_years <- glm(Graft.survival.at.3.years ~ Fem.V + SubC.V + IJV +
+                                  Time.Spent.on.dialysis..months.,
+                                data = renal_data, family = binomial)
+
+# Get the model summary
+summary_table_additional_3_years <- tbl_regression(model_additional_3_years, label = labels)
+
+# Display the table
+summary_table_additional_3_years
+
+```
+

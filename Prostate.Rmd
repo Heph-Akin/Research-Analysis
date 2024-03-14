@@ -1,0 +1,209 @@
+---
+title: "Prostate"
+author: "Hephzibah Akindele"
+date: "2024-01-18"
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(tidyverse)
+library(ggplot2)
+library(gridExtra)
+library(ggthemes)
+
+prostate_raw <- read.csv("/home/akindele/Documents/Data_Science_Projects/R/Research Analysis/prostate_spread_new.csv")
+prostate <- read.csv("/home/akindele/Research Analysis/prostate_modified.csv")
+
+
+
+# Convert all blank spaces to NA
+prostate_raw <- prostate_raw %>%
+  mutate_all(~ ifelse(. == "", NA, .))
+```
+
+## Tables
+
+```{r tabbles, echo=FALSE}
+library(gtsummary)
+library(dplyr)
+
+selected_vars_reordered <- c(
+  "Have.you.ever.heard.of.prostate.cancer." = "Have you ever heard of prostate cancer?",
+  "If.yes..how.did.you.hear.about.itAdvert" = "How did you hear about it (Advert)",
+  "If.yes..how.did.you.hear.about.itChurch.Pastor.Priest" = "How did you hear about it (Church/Pastor/Priest)",
+  "If.yes..how.did.you.hear.about.itFamily.Friends" = "How did you hear about it (Family/Friends)",
+  "If.yes..how.did.you.hear.about.itGroup.work" = "How did you hear about it (Group work)",
+  "If.yes..how.did.you.hear.about.itHospital" = "How did you hear about it (Hospital)",
+  "If.yes..how.did.you.hear.about.itMedia..TV.radio.newspaper." = "How did you hear about it (Media: TV/radio/newspaper)",
+  "If.yes..how.did.you.hear.about.itMedical.check.up.meetings" = "How did you hear about it (Medical check-up/meetings)",
+  "If.yes..how.did.you.hear.about.itOffice" = "How did you hear about it (Office)",
+  "If.yes..how.did.you.hear.about.itSchool" = "How did you hear about it (School)",
+  "If.yes..how.did.you.hear.about.itSocial.media.Internet" = "How did you hear about it (Social media/Internet)",
+  "If.yes..how.did.you.hear.about.itWhatsApp.group" = "How did you hear about it (WhatsApp group)",
+  "A.man.that.has.prostate.cancer.can.have.no.symptoms" = "A man that has prostate cancer can have no symptoms",
+  "Difficulty.in.passing.urine" = "Difficulty in passing urine",
+  "Urinating.frequently..especially.at.night." = "Urinating frequently, especially at night",
+  "Blood.in.the.urine" = "Blood in the urine",
+  "Pain.when.urinating" = "Pain when urinating",
+  "Pain.in.the.bone" = "Pain in the bone",
+  "Loss.of.weight" = "Loss of weight",
+  "Others..Please.specify................" = "Others, please specify",
+  "Runs.in.the.family..Hereditary." = "Runs in the family, Hereditary",
+  "Increasing.age" = "Increasing age",
+  "Drinking.alcohol" = "Drinking alcohol",
+  "Smoking.Cigarettes" = "Smoking Cigarettes",
+  "Fatty.foods" = "Fatty foods",
+  "Poor.physical.activity" = "Poor physical activity",
+  "Consumption.of.red.meat" = "Consumption of red meat",
+  "Others..Please.specify........." = "Others, please specify",
+  "Can.prostate.cancer.be.prevented." = "Can prostate cancer be prevented?",
+  "Periodic.Medical.check.up" = "Periodic Medical check-up",
+  "Diet.control" = "Diet control",
+  "Reduced.consumption.of.red.meat" = "Reduced consumption of red meat",
+  "Exercise" = "Exercise",
+  "Avoid.smoking" = "Avoid smoking",
+  "Other..please.specify." = "Other, please specify",
+  "Do.you.know.about.prostate.cancer.screening" = "Do you know about prostate cancer screening?",
+  "If.yes..how.did.you.know.about.it.Family.Friends" = "How did you know about it (Family/Friends)",
+  "If.yes..how.did.you.know.about.it.Hospital" = "How did you know about it (Hospital)",
+  "If.yes..how.did.you.know.about.it.Internet.Social.media..WhatsApp.Facebook." = "How did you know about it (Internet/Social media(WhatsApp/Facebook))",
+  "If.yes..how.did.you.know.about.it.Media..TV.Newspaper." = "How did you know about it (Media: TV/Newspaper)",
+  "If.yes..how.did.you.know.about.it.Meeting" = "How did you know about it (Meeting)",
+  "If.yes..how.did.you.know.about.it.Office" = "How did you know about it (Office)",
+  "If.yes..how.did.you.know.about.it.School" = "How did you know about it (School)",
+  "If.yes..how.did.you.know.about.it.Work" = "How did you know about it (Work)",
+  "Which.tests.do.you.think.can.be.done.to.screen.for.prostate.cancer.Blood.test..PSA." = "Which tests do you think can be done to screen for prostate cancer? (Blood test, PSA)",
+  "Which.tests.do.you.think.can.be.done.to.screen.for.prostate.cancer.Don.t.know" = "Which tests do you think can be done to screen for prostate cancer? (Don't know)",
+  "Which.tests.do.you.think.can.be.done.to.screen.for.prostate.cancer.Gloved.lubricated.finger.into.the.anus..Digital.Rectal.Examination." = "Which tests do you think can be done to screen for prostate cancer? (Gloved lubricated finger into the anus, Digital Rectal Examination)",
+  "When.was.your.most.recent.test.done.1...5.years.ago" = "When was your most recent test done? (1-5 years ago)",
+  "When.was.your.most.recent.test.done.Less.than.a.year.ago" = "When was your most recent test done? (Less than a year ago)",
+  "When.was.your.most.recent.test.done.More.than.5.years.ago" = "When was your most recent test done? (More than 5 years ago)",
+  "What.was.the.reason.you.went.for.prostate.cancer.screening.Family.and.Friends.recommended.it" = "Reason for going for prostate cancer screening (Family and Friends recommended it)",
+  "What.was.the.reason.you.went.for.prostate.cancer.screening.I.discovered.i.was.at.risk" = "Reason for going for prostate cancer screening (I discovered I was at risk)",
+  "What.was.the.reason.you.went.for.prostate.cancer.screening.My.Doctor.recommended.it" = "Reason for going for prostate cancer screening (My Doctor recommended it)",
+  "Was.the.prostate.cancer.screening.result.explained.to.you." = "Was the prostate cancer screening result explained to you?",
+  "Would.you.go.for.a.screening.in.the.near.future." = "Would you go for a screening in the near future?",
+  "Would.you.encourage.Friends.and.relatives.to.go.for.prostate.cancer.screening." = "Would you encourage Friends and relatives to go for prostate cancer screening?"
+)
+
+
+# Create a summary table with appropriate variable labels
+tbl_reordered <- prostate_raw %>%
+  select(all_of(names(selected_vars_reordered))) %>%
+  tbl_summary(missing_text = "Missing", label = selected_vars_reordered)
+
+# Display the table
+tbl_reordered
+
+
+library(gtsummary)
+library(dplyr)
+library(tidyr)
+
+likert_df <- prostate_raw %>%
+  select(
+    Prostate.cancer.can.kill.a.man,
+    Prostate.cancer.commonly.affects.white.people,
+    I.am.too.busy.to.go.for.prostate.cancer.screening,
+    It.is.important.to.me.to.have.a.prostate.cancer.screening.test,
+    I.think.men.who.undergo.prostate.cancer.screening.will.have.more.problems.than.men.who.do.not.go.for.screening,
+    I.am.afraid.that.if.I.have.a.prostate.cancer.screening.test..the.test.result.will.show.that.I.have.prostate.cancer,
+    I.find.prostate.cancer.screening..DRE..uncomfortable.and.embarrassing,
+    Prostate.cancer.screening.is.expensive,
+    Prostate.cancer.can.be.sexually.transmitted,
+    Prostate.cancer.cannot.make.me.infertile,
+    Prostate.cancer.is.as.a.result.of.a.curse.or.taboo
+  )
+
+likert_df <- likert_df %>%
+  pivot_longer(cols = everything(), names_to = "Item", values_to = "value") %>%
+  mutate(Item = case_when(
+    Item == "Prostate.cancer.can.kill.a.man" ~ "Prostate Cancer Can Kill a Man",
+    Item == "Prostate.cancer.commonly.affects.white.people" ~ "Prostate Cancer Commonly Affects White People",
+    Item == "I.am.too.busy.to.go.for.prostate.cancer.screening" ~ "Too Busy for Screening",
+    Item == "It.is.important.to.me.to.have.a.prostate.cancer.screening.test" ~ "Importance of Screening Test",
+    Item == "I.think.men.who.undergo.prostate.cancer.screening.will.have.more.problems.than.men.who.do.not.go.for.screening" ~ "Men whoundergo screening will develop more problems that men who don't",
+    Item == "I.am.afraid.that.if.I.have.a.prostate.cancer.screening.test..the.test.result.will.show.that.I.have.prostate.cancer" ~ "Fear of Positive Screening Result",
+    Item == "I.find.prostate.cancer.screening..DRE..uncomfortable.and.embarrassing" ~ "Discomfort/Embarassment with DRE",
+    Item == "Prostate.cancer.screening.is.expensive" ~ "Prostate Cancer Screening is expensive",
+    Item == "Prostate.cancer.can.be.sexually.transmitted" ~ "Prostate Cancer is Sexual Transmitted",
+    Item == "Prostate.cancer.cannot.make.me.infertile" ~ "Prostate Cancer cannot make me infertile",
+    Item == "Prostate.cancer.is.as.a.result.of.a.curse.or.taboo" ~ "Prostate Cancer is a result of a Curse or Taboo",
+    TRUE ~ Item),
+    value = fct_relevel(value, "Strongly Agree", "Agree", "Neutral", "Disagree", "Strongly Disagree")
+  ) %>%
+  tbl_summary(
+    by = value,
+    statistic = list(all_continuous() ~ "{mean} ± {sd}"),
+    percent = "row"
+  ) %>%
+  modify_header(label = "**Support for Items**")
+
+as_gt(likert_df)
+
+
+
+
+
+library(gtsummary)
+library(dplyr)
+
+# Define variable labels in the order of the questionnaire
+selected_vars <- c(
+  "Have.you.ever.been.screened.for.prostate.cancer." = "Have you ever been screened for prostate cancer?",
+  "If.yes..which.screening.method.did.you.go.for..Gloved.Lubricated.Finger.in.Anus" = "Which screening method did you go for? (Gloved Lubricated Finger in Anus)",
+  "If.yes..which.screening.method.did.you.go.for..Blood.test.for.PSA.level" = "Which screening method did you go for? (Blood test for PSA level)",
+  "If.yes..which.screening.method.did.you.go.for..Not.sure" = "Which screening method did you go for? (Not sure)",
+  "When.was.your.most.recent.test.done.More.than.5.years.ago" = "When was your most recent test done? (More than 5 years ago)",
+  "When.was.your.most.recent.test.done.1...5.years.ago" = "When was your most recent test done? (1-5 years ago)",
+  "When.was.your.most.recent.test.done.Less.than.a.year.ago" = "When was your most recent test done? (Less than a year ago)",
+  "What.was.the.reason.you.went.for.prostate.cancer.screening.My.Doctor.recommended.it" = "Reason for going for prostate cancer screening (My Doctor recommended it)",
+  "What.was.the.reason.you.went.for.prostate.cancer.screening.Family.and.Friends.recommended.it" = "Reason for going for prostate cancer screening (Family and Friends recommended it)",
+  "What.was.the.reason.you.went.for.prostate.cancer.screening.I.discovered.i.was.at.risk" = "Reason for going for prostate cancer screening (I discovered I was at risk)",
+  "Was.the.prostate.cancer.screening.result.explained.to.you." = "Was the prostate cancer screening result explained to you?",
+  "If.you.have.never.screened..why.I.am.not.aware.of.the.tests" = "If you have never screened, why? (I am not aware of the tests)",
+  "If.you.have.never.screened..why.I.don.t.think.i.am.at.risk" = "If you have never screened, why? (I don't think I am at risk)",
+  "If.you.have.never.screened..why.It.is.not.important.to.me" = "If you have never screened, why? (It is not important to me)",
+  "If.you.have.never.screened..why.The.test.is.embarrassing" = "If you have never screened, why? (The test is embarrassing)",
+  "If.you.have.never.screened..why.It.is.too.expensive" = "If you have never screened, why? (It is too expensive)",
+  "Would.you.go.for.a.screening.in.the.near.future." = "Would you go for a screening in the near future?",
+  "Would.you.encourage.Friends.and.relatives.to.go.for.prostate.cancer.screening." = "Would you encourage Friends and relatives to go for prostate cancer screening?"
+)
+
+# Create a summary table with appropriate variable labels
+tbl <- prostate_raw %>%
+  select(all_of(names(selected_vars))) %>%
+  tbl_summary(missing_text = "Missing", label = selected_vars)
+
+# Display the table
+tbl
+
+
+prostate %>%
+  select(Religion, Ethnic.group, Marital.Status, Level.of.Education, knowledge_category) %>%
+  tbl_summary(by = knowledge_category, percent = "row") %>%
+  add_overall()  %>%
+  add_p()
+
+prostate %>%
+  select(knowledge_category, attitude_category) %>%
+  tbl_summary(by = attitude_category, percent = "row") %>%
+  add_overall() %>%
+  add_p()
+
+prostate %>%
+  select(knowledge_category, practice_category) %>%
+  tbl_summary(by = practice_category, percent = "row") %>%
+  add_overall() %>%
+  add_p()
+
+
+
+
+
+```
+
