@@ -1,36 +1,333 @@
 ---
 title: "Oral Health Literacy"
-output: word_document
+output:
+  word_document: default
+  pdf_document: default
 date: "2024-04-26"
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, message = FALSE)
+library(googlesheets4)
+library(janitor)
+library(tidyr)
+library(gtsummary)
+library(ggstatsplot)
+library(knitr)
+library(flextable)
+library(ggplot2)
+library(dplyr)
+
+
+# Load the Google Sheet by providing the URL or the sheet name
+df <- read.csv("OHL.csv")
+
+# Load the Google Sheet by providing the URL or the sheet name
+health_belief <- read_sheet("https://docs.google.com/spreadsheets/d/1GnWhulFPXXO5-5zmNcRhx2xZZpIZ99JteLn9cDT5KW4/edit?usp=sharing") %>%
+  clean_names()
+
+motivation <- read.csv("C:/Users/user/Documents/Research-Analysis/motivation_spread.csv")
+
 ```
 
-## Sociodemograpic distribution of respondents
+## Demographic distribution of respondents
 
 ```{r sociodemographic_table}
+# Demographics Tables
+# Summarize demographics with mean ± SD for continuous variables
+df %>%
+  select(age, age_cat, gend) %>%
+  tbl_summary(
+    type = age ~ "continuous",
+    statistic = all_continuous() ~ "{mean} ± {sd}",
+    digits = list(all_continuous() ~ 2, all_categorical() ~ 1)  # Set 2 decimal places for continuous, 1 decimal place for categorical (percentages)
+  ) 
+
 
 ```
-
 
 ## Oral health Literacy of respondents
 
 ```{r ohl_table}
+# Define labels for variables
+labels <- list(
+  com1 = "Communication",
+  recep_1 = "Receptivity 1",
+  recep_2 = "Receptivity 2",
+  und = "Understanding/Education",
+  util_1 = "Utilisation 1",
+  util2 = "Utilisation 2",
+  sup = "Support",
+  score = "Score",
+  OHL_cat = "Oral Health Literacy Category"
+)
+
+# Summarize oral health literacy with mean ± SD for score and proper labels
+df %>%
+  select(com1, recep_1, recep_2, und, util_1, util2, sup, score, OHL_cat) %>%
+  tbl_summary(
+    type = score ~ "continuous",
+    label = labels,
+    statistic = score ~ "{mean} ± {sd}",
+    digits = list(all_continuous() ~ 2, all_categorical() ~ 1)  # Set 2 decimal places for the "score" variable
+  ) %>%
+  as_flex_table()
+
+df_2 <- df %>%
+  mutate(
+    com1 = ifelse(com1 == "YES", 1, 0),
+    recep_1 = ifelse(recep_1 == "YES", 1, 0),
+    recep_2 = ifelse(recep_2 == "YES", 1, 0),
+    und = ifelse(und == "YES", 1, 0),
+    util_1 = ifelse(util_1 == "YES", 1, 0),
+    util2 = ifelse(util2 == "YES", 1, 0),
+    sup = ifelse(sup == "YES", 1, 0)
+  )
+
+df_2 %>%
+  select(com1, recep_1, recep_2, und, util_1, util2, sup, score) %>%
+  tbl_summary(
+    type = everything() ~ "continuous",  # Treat all variables as continuous
+    label = labels,
+    statistic = all_continuous() ~ "{mean} ± {sd}",
+    digits = list(all_continuous() ~ 2)  # Set 2 decimal places for continuous variables
+  )
+
+
 
 ```
-
 
 ## Oral health Literacy across age, gender,education
 
 ```{r ohl_association_table}
+df %>%
+  select(age_cat, com1, recep_1, recep_2, und, util_1, util2, sup, score, OHL_cat) %>%
+  tbl_summary(
+    by = age_cat,
+    type = score ~ "continuous",
+    label = labels,
+    statistic = score ~ "{mean} ± {sd}",
+    digits = list(all_continuous() ~ 2, all_categorical() ~ 1),  # Set 2 decimal places for the "score" variable
+    percent = "column"
+  ) %>%
+  add_p()
 
+
+
+df %>%
+  select(gend, com1, recep_1, recep_2, und, util_1, util2, sup, score, OHL_cat) %>%
+  tbl_summary(
+    by = gend,
+    type = score ~ "continuous",
+    label = labels,
+    statistic = score ~ "{mean} ± {sd}",
+    digits = list(all_continuous() ~ 2, all_categorical() ~ 1),  # Set 2 decimal places for the "score" variable
+    percent = "column"
+  ) %>%
+  add_p()
+
+
+
+
+df %>%
+  select(com1, recep_1, recep_2, und, util_1, util2, sup, score, OHL_cat) %>%
+  tbl_summary(
+    by = und,
+    type = score ~ "continuous",
+    label = labels,
+    statistic = score ~ "{mean} ± {sd}",
+    digits = list(all_continuous() ~ 2, all_categorical() ~ 1),  # Set 2 decimal places for the "score" variable
+    percent = "column"
+  ) %>%
+  add_p()
 ```
-
 
 ## Plots
 
 ```{r plots}
+
+# Create ggbetweenstats plot with x-axis label
+plot_ggbetween <- ggbetweenstats(
+  data  = df,
+  x     = und,
+  y     = score,
+  title = "Oral health literacy across education category"
+) +
+labs(x = "Education")  # Add x-axis label
+
+# Save ggbetweenstats plot as PNG
+ggsave("plot_ggbetween.png", plot = plot_ggbetween, width = 10, height = 6, dpi = 300)
+
+# Create gghistostats plot
+plot_gghistostats <- gghistostats(
+  data       = df,
+  x          = score,
+  title      = "Oral health literacy",
+  binwidth   = 0.5
+)
+
+# Save gghistostats plot as PNG
+ggsave("plot_gghistostats.png", plot = plot_gghistostats, width = 8, height = 6, dpi = 300)
+
+# Define the order of age categories
+age_order <- c("41-50", "51-60", "61-70", "71-80", "81-90", ">90")
+
+# Calculate the mean score for each age category
+means_by_age <- df %>%
+  group_by(age_cat) %>%
+  summarize(mean_score = mean(score, na.rm = TRUE)) %>%
+  mutate(age_cat = factor(age_cat, levels = age_order))  # Arrange age categories
+
+# Create ggplot2 plot with mean scores
+plot_ggdotplotstats <- ggplot(df, aes(x = score, y = age_cat)) +
+  geom_point(data = means_by_age, aes(x = mean_score, y = age_cat), color = "blue", size = 3) +  # Plot means
+  geom_vline(xintercept = 1.99, linetype = "dashed", color = "red") +  # Add vertical line
+  labs(title = "Distribution of Oral Health literacy across age groups",
+       x = "Oral Health literacy score",
+       y = "Age Category")
+
+# Save ggplot2 plot as PNG
+ggsave("plot_mean_scores.png", plot = plot_ggdotplotstats, width = 10, height = 6, dpi = 300)
+
+
+
+
+
+```
+```{r motivation}
+# Health Belief -----------------------------------------------------------
+
+
+# Loop through columns and replace "N/A" and "NA" text with NA
+for (col in colnames(health_belief)) {
+  health_belief[[col]][health_belief[[col]] %in% c("N/A", "NA")] <- NA
+}
+
+
+
+
+health_belief %>%
+  select(believe, pain, dis, death, finance, family, prevent, steps, how, trigger, action) %>%
+  tbl_summary(
+    label = list(
+      believe ~ "Perceived Susceptibility: Belief in having oral disease",
+      pain ~ "Perceived Severity: Belief that oral disease causes pain",
+      dis ~ "Perceived Severity: Belief that oral disease causes disability",
+      death ~ "Perceived Severity: Belief that oral disease can cause death",
+      finance ~ "Perceived Severity: Belief that oral disease affects finances",
+      family ~ "Perceived Severity: Belief that oral disease causes family problems",
+      prevent ~ "Perceived Benefits: Belief in ability to prevent oral disease",
+      steps ~ "Perceived Barriers: Belief that taking prevention steps is difficult",
+      how ~ "Perceived Barriers: How taking prevention steps is difficult",
+      trigger ~ "Perceived Barriers: Preventive action trigger",
+      action ~ "Self Efficacy: Readiness to take preventive action"
+    ),
+    digits = list(all_continuous() ~ 2),
+    statistic = list(all_continuous() ~ "{mean} ({sd})"),
+    missing_text = "Unanswered"
+  )
+
+
+
+
+# Motivation --------------------------------------------------------------
+
+# Combine Financial.constraint and Financial.constraint.1 into a single variable
+motivation_combined <- motivation %>%
+  mutate(Financial_constraint_combined = Financial.constraint + Financial.constraint.1) %>%
+  select(-Financial.constraint, -Financial.constraint.1)  # Remove the original variables
+
+# Select the variables for the summary table
+motivation_subset <- motivation_combined %>%
+  select(PHASES, Distance, Fear.and.anxiety, Ignorance, Lack.of.assistance, Mobility, Financial_constraint_combined)
+
+# Create a gt summary table
+tbl_motivation_summary <- motivation_subset %>%
+  tbl_summary(
+    label = list(
+      PHASES ~ "Phases",
+      Distance ~ "Distance",
+      Fear.and.anxiety ~ "Fear and Anxiety",
+      Ignorance ~ "Ignorance",
+      Lack.of.assistance ~ "Lack of Assistance",
+      Mobility ~ "Mobility",
+      Financial_constraint_combined ~ "Financial Constraint"
+    ),
+    digits = list(all_continuous() ~ 2),
+    statistic = list(all_continuous() ~ "{mean} ({sd})")
+  )
+
+# Display the gt summary table
+tbl_motivation_summary
+
+###Combined table
+# Extract the desired columns from each data frame
+health_belief_action <- health_belief %>%
+  select(action)
+
+motivation_phases <- motivation %>%
+  select(PHASES)
+
+# Join the extracted columns based on a common key
+joined_df <- bind_cols(health_belief_action, motivation_phases)
+
+# Modify the "action" column in joined_df
+joined_df <- joined_df %>%
+  mutate(action = ifelse(action == "READY", "Action", "Not yet"))
+
+# Modify the "PHASES" column in joined_df
+joined_df <- joined_df %>%
+  mutate(PHASES = ifelse(PHASES == "ACT", "Action", "Not yet"))
+
+joined_df <- joined_df %>%
+  mutate(
+    no_intervention = ifelse(row_number() %% (115 + 23) <= 115, "Action", "Not yet")
+  )
+# Display the modified data frame
+print(joined_df)
+
+# Reshape the data into long format
+long_df <- joined_df %>%
+  pivot_longer(cols = c(action, PHASES, no_intervention), names_to = "group", values_to = "value")
+
+# Create a gt summary table with p-values
+tbl <- tbl_summary(long_df, 
+  by = value, 
+  percent = "cell"
+) %>% add_p()
+
+# Display the gt summary table
+tbl
+
+
+
+# Calculate the percentage of Value = 1 for each variable
+df_long <- motivation_subset %>%
+  pivot_longer(cols = -PHASES, names_to = "Variable", values_to = "Value") %>%
+  filter(Value == 1) %>%  # Filter to keep only rows with Value = 1 
+  group_by(Variable) %>%
+  summarise(percent = sum(Value)/150 * 100)  # Calculate the percentage of Value = 1
+
+# Create a dataframe with variable names and their corresponding labels
+variable_labels <- data.frame(
+  Variable = c("Distance", "Fear.and.anxiety", "Financial_constraint_combined", "Ignorance", "Lack.of.assistance", "Mobility"),
+  Label = c("Distance", "Fear and Anxiety", "Financial Constraint", "Ignorance", "Lack of Assistance", "Mobility")
+)
+
+# Merge the labels with df_long
+df_long_labeled <- merge(df_long, variable_labels, by = "Variable")
+
+# Create a lollipop chart with percentages and explicit variable labels
+ggplot(df_long_labeled, aes(x = Label, y = percent)) +
+  geom_segment(aes(xend = Label, yend = 0), color = "gray") +  # Add segments
+  geom_point(color = "red", size = 3) +  # Add points for lollipops
+  coord_flip() +  # Flip coordinates for horizontal chart
+  theme_minimal() +  # Use a minimal theme
+  labs(x = NULL, y = "Percentage") +  # Set axis labels
+  scale_x_discrete(labels = df_long_labeled$Label) +  # Explicitly map variable names
+  scale_y_continuous(labels = scales::percent_format(scale = 1))  # Format y-axis as percentage
+
+ggsave("lollipop_chart.png", width = 10, height = 6, dpi = 300)
+
 
 ```

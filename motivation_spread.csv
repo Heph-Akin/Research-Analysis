@@ -1,0 +1,151 @@
+CODE,LIMIT,PHASES,BELIEVE,PAIN,DIS,DEATH,FINANCE,FAMILY,PREVENT,STEPS,HOW,TRIGGER,ACTION,Distance,Fear and anxiety,Financial constraint,Financial constraint ,Ignorance,Lack of assistance,Mobility,OTHERS
+MAC17,Ignorance,PREP,,,,,,,,,,,,0,0,0,0,1,0,0,0
+MAC13,Ignorance,PREP,,,,,,,,,,,,0,0,0,0,1,0,0,0
+MAC15,Ignorance,PREP,,,,,,,,,,,,0,0,0,0,1,0,0,0
+MAC11,Ignorance,PREP,,,,,,,,,,,,0,0,0,0,1,0,0,0
+MAC14,Ignorance,PREP,,,,,,,,,,,,0,0,0,0,1,0,0,0
+MAC16,Ignorance,PREP,,,,,,,,,,,,0,0,0,0,1,0,0,0
+MAB8,Ignorance,PREP,,,,,,,,,,,,0,0,0,0,1,0,0,0
+MAB7,Ignorance,ACT,,,,,,,,,,,,0,0,0,0,1,0,0,0
+MAC18,Ignorance,PREP,,,,,,,,,,,,0,0,0,0,1,0,0,0
+MAC20,Ignorance,PREP,,,,,,,,,,,,0,0,0,0,1,0,0,0
+MAC19,Ignorance,PREP,,,,,,,,,,,,0,0,0,0,1,0,0,0
+MAC21,Ignorance,PREP,,,,,,,,,,,,0,0,0,0,1,0,0,0
+MAB4,Ignorance,CONTEMP,,,,,,,,,,,,0,0,0,0,1,0,0,0
+MAC9,Ignorance,PREP,,,,,,,,,,,,0,0,0,0,1,0,0,0
+MAB6,Ignorance,PREP,,,,,,,,,,,,0,0,0,0,1,0,0,0
+MAB8,Ignorance,ACT,,,,,,,,,,,,0,0,0,0,1,0,0,0
+MAC2,OTHERS,ACT,,,,,,,,,,,,0,0,0,0,0,0,0,1
+MAB1,Ignorance,PREP,,,,,,,,,,,,0,0,0,0,1,0,0,0
+MAC7,Ignorance,PRE-CON,,,,,,,,,,,,0,0,0,0,1,0,0,0
+MAC5,Ignorance,PRE-CON,,,,,,,,,,,,0,0,0,0,1,0,0,0
+MAC6,Ignorance,PREP,,,,,,,,,,,,0,0,0,0,1,0,0,0
+MAB3,Ignorance,PREP,,,,,,,,,,,,0,0,0,0,1,0,0,0
+MAC8,Ignorance,PREP,,,,,,,,,,,,0,0,0,0,1,0,0,0
+MAC8,Ignorance,PREP,,,,,,,,,,,,0,0,0,0,1,0,0,0
+MAC1,Fear and anxiety,PREP,,,,,,,,,,,,0,1,0,0,0,0,0,0
+MAC3,Ignorance,ACT,,,,,,,,,,,,0,0,0,0,1,0,0,0
+MAC4,Ignorance,PRE-CON,,,,,,,,,,,,0,0,0,0,1,0,0,0
+MAB2,Ignorance,ACT,,,,,,,,,,,,0,0,0,0,1,0,0,0
+MAC24,Ignorance,PREP,,,,,,,,,,,,0,0,0,0,1,0,0,0
+MAC25,Ignorance,PREP,,,,,,,,,,,,0,0,0,0,1,0,0,0
+MAC31,Ignorance,PREP,,,,,,,,,,,,0,0,0,0,1,0,0,0
+MAB12,Fear and anxiety,PREP,,,,,,,,,,,,0,1,0,0,0,0,0,0
+MAC30,Ignorance,PREP,,,,,,,,,,,,0,0,0,0,1,0,0,0
+MAC1,Lack of assistance,ACTION,,,,,,,,,,,,0,0,0,0,0,1,0,0
+MAB1,Fear and anxiety,ACT,,,,,,,,,,,,0,1,0,0,0,0,0,0
+SHC3,"Financial constraint,Fear and anxiety",PRE-CON,,,,,,,,,,,,0,1,1,0,0,0,0,0
+SHC1,Ignorance,ACT,,,,,,,,,,,,0,0,0,0,1,0,0,0
+SHB1,Ignorance,ACT,,,,,,,,,,,,0,0,0,0,1,0,0,0
+SHB2,Ignorance,ACT,,,,,,,,,,,,0,0,0,0,1,0,0,0
+SHC4,Financial constraint ,ACT,,,,,,,,,,,,0,0,0,1,0,0,0,0
+SHB3,Ignorance,PREP,,,,,,,,,,,,0,0,0,0,1,0,0,0
+SHB5,Financial constraint,ACT,,,,,,,,,,,,0,0,1,0,0,0,0,0
+SHC2,"Financial constraint,Lack of assistance",ACT,,,,,,,,,,,,0,0,1,0,0,1,0,0
+SHB4,"Financial constraint,Lack of assistance",ACT,,,,,,,,,,,,0,0,1,0,0,1,0,0
+MGC26,"Financial constraint,Fear and anxiety",CONTEMP,,,,,,,,,,,,0,1,1,0,0,0,0,0
+MGC27,"Financial constraint,Fear and anxiety",CONTEMP,,,,,,,,,,,,0,1,1,0,0,0,0,0
+MGC27,"Financial constraint,Fear and anxiety",CONTEMP,,,,,,,,,,,,0,1,1,0,0,0,0,0
+MGC22,"Financial constraint,Fear and anxiety",CONTEMP,,,,,,,,,,,,0,1,1,0,0,0,0,0
+MGB27,"Financial constraint,Fear and anxiety",PREP,,,,,,,,,,,,0,1,1,0,0,0,0,0
+MGC23,"Financial constraint,Fear and anxiety",CONTEMP,,,,,,,,,,,,0,1,1,0,0,0,0,0
+MGC18,"Financial constraint,Lack of assistance",CONTEMP,,,,,,,,,,,,0,0,1,0,0,1,0,0
+MGB25,"Financial constraint,Ignorance",CONTEMP,,,,,,,,,,,,0,0,1,0,1,0,0,0
+MGB25,"Financial constraint,Ignorance",CONTEMP,,,,,,,,,,,,0,0,1,0,1,0,0,0
+MGC29,Fear and anxiety,ACT,,,,,,,,,,,,0,1,0,0,0,0,0,0
+MGC20,"Financial constraint,Lack of assistance",CONTEMP,,,,,,,,,,,,0,0,1,0,0,1,0,0
+MGB26,Lack of assistance,PRE-CON,,,,,,,,,,,,0,0,0,0,0,1,0,0
+MGC25,"Financial constraint,Ignorance",ACT,,,,,,,,,,,,0,0,1,0,1,0,0,0
+MGB19,"Ignorance,Fear and anxiety",ACT,,,,,,,,,,,,0,1,0,0,1,0,0,0
+MGB24,Ignorance,CONTEMP,,,,,,,,,,,,0,0,0,0,1,0,0,0
+MGB23,Financial constraint,CONTEMP,,,,,,,,,,,,0,0,1,0,0,0,0,0
+MGC21,Ignorance,CONTEMP,,,,,,,,,,,,0,0,0,0,1,0,0,0
+MGB22,"Financial constraint,Ignorance",CONTEMP,,,,,,,,,,,,0,0,1,0,1,0,0,0
+MGC14,"Financial constraint,Lack of assistance",PREP,,,,,,,,,,,,0,0,1,0,0,1,0,0
+MGC15,"Lack of assistance,Mobility",PRE-CON,,,,,,,,,,,,0,0,0,0,0,1,1,0
+MGB20,Ignorance,PRE-CON,,,,,,,,,,,,0,0,0,0,1,0,0,0
+MGB14,"Financial constraint,Ignorance",PRE-CON,,,,,,,,,,,,0,0,1,0,1,0,0,0
+MGC17,Lack of assistance,CONTEMP,,,,,,,,,,,,0,0,0,0,0,1,0,0
+MGC10,"Financial constraint,Fear and anxiety",PRE-CON,,,,,,,,,,,,0,1,1,0,0,0,0,0
+MGB15,"Financial constraint,Ignorance",PRE-CON,,,,,,,,,,,,0,0,1,0,1,0,0,0
+MGC4,Ignorance,ACTION,,,,,,,,,,,,0,0,0,0,1,0,0,0
+MGB2,Ignorance,ACT,,,,,,,,,,,,0,0,0,0,1,0,0,0
+MGC8,"Financial constraint,Ignorance",PRE-CON,,,,,,,,,,,,0,0,1,0,1,0,0,0
+MGB12,Ignorance,CONTEMP,,,,,,,,,,,,0,0,0,0,1,0,0,0
+MGC8,"Financial constraint,Ignorance",PRE-CON,,,,,,,,,,,,0,0,1,0,1,0,0,0
+MGB9,Ignorance,CONTEMP,,,,,,,,,,,,0,0,0,0,1,0,0,0
+MGB5,Ignorance,ACT,,,,,,,,,,,,0,0,0,0,1,0,0,0
+MGB3,Ignorance,ACT,,,,,,,,,,,,0,0,0,0,1,0,0,0
+MGB4,Ignorance,ACT,,,,,,,,,,,,0,0,0,0,1,0,0,0
+MGC5,Ignorance,PRE-CON,,,,,,,,,,,,0,0,0,0,1,0,0,0
+MGB6,Ignorance,ACT,,,,,,,,,,,,0,0,0,0,1,0,0,0
+MGB10,"Financial constraint,Lack of assistance",CONTEMP,,,,,,,,,,,,0,0,1,0,0,1,0,0
+MGB11,Lack of assistance,PRE-CON,,,,,,,,,,,,0,0,0,0,0,1,0,0
+MGC10,"Financial constraint,Ignorance",PREP,,,,,,,,,,,,0,0,1,0,1,0,0,0
+MGC9,"Financial constraint,Ignorance",CONTEMP,,,,,,,,,,,,0,0,1,0,1,0,0,0
+MGC11,"Financial constraint,Ignorance",PRE-CON,,,,,,,,,,,,0,0,1,0,1,0,0,0
+OSC11,Distance,ACT,,,,,,,,,,,,1,0,0,0,0,0,0,0
+OSB12,Ignorance,PREP,,,,,,,,,,,,0,0,0,0,1,0,0,0
+APGB7,Lack of assistance,ACT,,,,,,,,,,,,0,0,0,0,0,1,0,0
+APGC6,Ignorance,ACT,,,,,,,,,,,,0,0,0,0,1,0,0,0
+,Ignorance,ACT,,,,,,,,,,,,0,0,0,0,1,0,0,0
+APGB6,Ignorance,PREP,,,,,,,,,,,,0,0,0,0,1,0,0,0
+APGB3,Ignorance,ACT,,,,,,,,,,,,0,0,0,0,1,0,0,0
+APGC2,Ignorance,ACT,,,,,,,,,,,,0,0,0,0,1,0,0,0
+APGB2,Ignorance,PRE-CON,,,,,,,,,,,,0,0,0,0,1,0,0,0
+APGC1,Financial constraint,ACT,,,,,,,,,,,,0,0,1,0,0,0,0,0
+APGB4,Fear and anxiety,PRE-CON,,,,,,,,,,,,0,1,0,0,0,0,0,0
+APGB5,"Ignorance,Fear and anxiety",ACT,,,,,,,,,,,,0,1,0,0,1,0,0,0
+APGC5,"Financial constraint,Ignorance",ACT,,,,,,,,,,,,0,0,1,0,1,0,0,0
+APGC5,Ignorance,ACT,,,,,,,,,,,,0,0,0,0,1,0,0,0
+APGC3,Financial constraint,ACT,,,,,,,,,,,,0,0,1,0,0,0,0,0
+MGB32,Financial constraint,PREP,,,,,,,,,,,,0,0,1,0,0,0,0,0
+MGC32,Financial constraint,PREP,,,,,,,,,,,,0,0,1,0,0,0,0,0
+MGC15,Financial constraint,PREP,,,,,,,,,,,,0,0,1,0,0,0,0,0
+MGC30,Financial constraint,PREP,,,,,,,,,,,,0,0,1,0,0,0,0,0
+MGC33,Financial constraint,PREP,,,,,,,,,,,,0,0,1,0,0,0,0,0
+MGC31,Financial constraint,PREP,,,,,,,,,,,,0,0,1,0,0,0,0,0
+MGB28,Financial constraint,PREP,,,,,,,,,,,,0,0,1,0,0,0,0,0
+MGB30,Ignorance,PREP,,,,,,,,,,,,0,0,0,0,1,0,0,0
+MGB29,Ignorance,PREP,,,,,,,,,,,,0,0,0,0,1,0,0,0
+SRGB9,"Financial constraint,Ignorance",ACT,,,,,,,,,,,,0,0,1,0,1,0,0,0
+SRGC15,Financial constraint,PRE-CON,,,,,,,,,,,,0,0,1,0,0,0,0,0
+SRGB15,Financial constraint,ACT,,,,,,,,,,,,0,0,1,0,0,0,0,0
+SRGB11,Financial constraint,ACT,,,,,,,,,,,,0,0,1,0,0,0,0,0
+SRGC13,Financial constraint,ACT,,,,,,,,,,,,0,0,1,0,0,0,0,0
+SRGC14,Financial constraint,ACT,,,,,,,,,,,,0,0,1,0,0,0,0,0
+SRGB6,Ignorance,ACT,,,,,,,,,,,,0,0,0,0,1,0,0,0
+SRGC16,Ignorance,ACT,,,,,,,,,,,,0,0,0,0,1,0,0,0
+SRGC18,Ignorance,ACT,,,,,,,,,,,,0,0,0,0,1,0,0,0
+SRG20,Financial constraint,ACT,,,,,,,,,,,,0,0,1,0,0,0,0,0
+SRGB17,Lack of assistance,ACT,,,,,,,,,,,,0,0,0,0,0,1,0,0
+MGB1,Financial constraint,ACT,,,,,,,,,,,,0,0,1,0,0,0,0,0
+OSC8,Distance,PREP,,,,,,,,,,,,1,0,0,0,0,0,0,0
+OSB22,Financial constraint,ACT,,,,,,,,,,,,0,0,1,0,0,0,0,0
+MGC1,"Financial constraint,Ignorance",ACT,,,,,,,,,,,,0,0,1,0,1,0,0,0
+OSB9,Ignorance,ACT,,,,,,,,,,,,0,0,0,0,1,0,0,0
+OSB8,Ignorance,ACT,,,,,,,,,,,,0,0,0,0,1,0,0,0
+OSC3,Ignorance,ACT,,,,,,,,,,,,0,0,0,0,1,0,0,0
+OSC3,Ignorance,ACT,,,,,,,,,,,,0,0,0,0,1,0,0,0
+OSB17,Ignorance,PRE-CON,,,,,,,,,,,,0,0,0,0,1,0,0,0
+OSB14,Ignorance,PREP,,,,,,,,,,,,0,0,0,0,1,0,0,0
+OSC2,Ignorance,ACT,,,,,,,,,,,,0,0,0,0,1,0,0,0
+OSB18,"Financial constraint,Ignorance",ACT,,,,,,,,,,,,0,0,1,0,1,0,0,0
+OSB4,Ignorance,ACT,,,,,,,,,,,,0,0,0,0,1,0,0,0
+OSB6,Ignorance,ACT,,,,,,,,,,,,0,0,0,0,1,0,0,0
+OSB5,Ignorance,ACT,,,,,,,,,,,,0,0,0,0,1,0,0,0
+OSB3,Financial constraint,ACT,,,,,,,,,,,,0,0,1,0,0,0,0,0
+OSB1,Ignorance,ACT,,,,,,,,,,,,0,0,0,0,1,0,0,0
+OSB2,Ignorance,ACT,,,,,,,,,,,,0,0,0,0,1,0,0,0
+OSC6,Financial constraint,PREP,,,,,,,,,,,,0,0,1,0,0,0,0,0
+OSB23,"Financial constraint,Ignorance",PREP,,,,,,,,,,,,0,0,1,0,1,0,0,0
+OSB23,"Financial constraint,Fear and anxiety",ACT,,,,,,,,,,,,0,1,1,0,0,0,0,0
+OSB19,Ignorance,PRE-CON,,,,,,,,,,,,0,0,0,0,1,0,0,0
+OSB20,Lack of assistance,PRE-CON,,,,,,,,,,,,0,0,0,0,0,1,0,0
+SRGC2,Financial constraint,PREP,,,,,,,,,,,,0,0,1,0,0,0,0,0
+SRGC4,Ignorance,ACT,,,,,,,,,,,,0,0,0,0,1,0,0,0
+OSB13,"Financial constraint,Ignorance",ACT,,,,,,,,,,,,0,0,1,0,1,0,0,0
+SRGB1,Ignorance,ACT,,,,,,,,,,,,0,0,0,0,1,0,0,0
+SRGB2,Ignorance,ACT,,,,,,,,,,,,0,0,0,0,1,0,0,0
+SRGC1,"Financial constraint,Fear and anxiety",PRE-CON,,,,,,,,,,,,0,1,1,0,0,0,0,0
+,Lack of assistance,PRE-CON,,,,,,,,,,,,0,0,0,0,0,1,0,0

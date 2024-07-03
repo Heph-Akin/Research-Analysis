@@ -1,0 +1,328 @@
+library(googlesheets4)
+library(janitor)
+library(tidyr)
+library(gtsummary)
+library(ggstatsplot)
+library(gt)
+library(knitr)
+library(flextable)
+library(ggplot2)
+library(dplyr)
+library(forcats)
+library(tibble)
+library(purrr)
+library(tools)
+library(viridis)
+library(hrbrthemes)
+library(stringr)
+
+
+
+# Load the Google Sheet by providing the URL or the sheet name
+df <- read_sheet("https://docs.google.com/spreadsheets/d/1Uni4zN_7bjk_3YaqJGQbpEdRslW4UfYqJtSxbmtIxrQ/edit?usp=sharing") %>%
+  clean_names() %>%
+  select(-timestamp)
+
+colnames(df)
+
+
+
+# Replace "Not Applicable" with NA across all columns except specified ones
+df <- df %>%
+  mutate(across(-c(x1_age_at_last_birthday_in_years, `x8_if_yes_how_will_you_rate_the_pain_discomfort_on_a_scale_of_0_to_10_0_meaning_no_pain_and_10_the_most_pain`), ~na_if(., "Not Applicable")))
+
+# Define labels for variables
+labels <- list(
+  x1_age_at_last_birthday_in_years = "Age at last birthday (in years)",
+  age_category = "Age Category",
+  x2_sex = "Sex"
+)
+
+
+
+
+# Create a summary table
+summary_table <- df %>%
+  select(x1_age_at_last_birthday_in_years, age_category, x2_sex) %>%
+  tbl_summary(
+    label = labels,
+    statistic = list(all_categorical() ~ "{n} ({p}%)", all_continuous() ~ "{mean} ± {sd}"),
+    digits = list(all_continuous() ~ 2, all_categorical() ~ 1)
+  ) %>%
+  bold_labels() %>%
+  italicize_levels()
+
+# Print the summary table
+summary_table
+
+
+
+# Define labels for variables
+labels <- list(
+  x3_how_long_have_you_been_on_orthodontic_treatment = "Duration of Orthodontic Treatment",
+  x4_what_type_of_orthodontic_appliance_are_you_being_treated_with = "Type of Orthodontic Appliance",
+  x5_where_are_you_having_your_orthodontic_treatment = "Location of Orthodontic Treatment"
+)
+
+# Create a summary table
+df %>%
+  select(
+    x3_how_long_have_you_been_on_orthodontic_treatment,
+    x4_what_type_of_orthodontic_appliance_are_you_being_treated_with,
+    x5_where_are_you_having_your_orthodontic_treatment
+  ) %>%
+  tbl_summary(
+    label = labels,
+    statistic = list(
+      all_categorical() ~ "{n} ({p}%)", 
+      all_continuous() ~ "{mean} ± {sd}"
+    ),
+    digits = list(
+      all_continuous() ~ 2, 
+      all_categorical() ~ 1
+    )
+  ) %>%
+  bold_labels() %>%
+  italicize_levels()
+
+
+
+
+
+
+# Define labels for variables
+labels <- list(
+  x7_when_you_had_your_orthodontic_appliance_braces_installed_the_first_time_did_you_experience_any_pain_or_discomfort = "Pain/Discomfort Experience during Initial Installation",
+  x8_if_yes_how_will_you_rate_the_pain_discomfort_on_a_scale_of_0_to_10_0_meaning_no_pain_and_10_the_most_pain = "Pain/Discomfort Rating (1-10 Scale)",
+  x11_which_of_the_following_best_describes_your_level_of_pain = "Level of Pain Description",
+  x9_how_long_did_the_pain_last = "Duration of Pain/Discomfort (Hours)"
+)
+
+# Create a summary table
+df %>%
+  select(
+    x7_when_you_had_your_orthodontic_appliance_braces_installed_the_first_time_did_you_experience_any_pain_or_discomfort,
+    x8_if_yes_how_will_you_rate_the_pain_discomfort_on_a_scale_of_0_to_10_0_meaning_no_pain_and_10_the_most_pain,
+    x11_which_of_the_following_best_describes_your_level_of_pain,
+    x9_how_long_did_the_pain_last
+  ) %>%
+  tbl_summary(
+    label = labels,
+    statistic = list(
+      all_categorical() ~ "{n} ({p}%)", 
+      all_continuous() ~ "{mean} ± {sd}"
+    ),
+    digits = list(
+      all_continuous() ~ 2, 
+      all_categorical() ~ 1
+    )
+  ) %>%
+  bold_labels() %>%
+  italicize_levels()
+
+
+
+
+
+# Define labels for variables
+labels <- list(
+  x16_did_your_orthodontist_mention_that_you_would_experience_any_form_of_pain_discomfort_following_your_appliance_installation_delivery = "Informed about the possibility of Pain by Orthodontist",
+  x17_did_he_she_recommend_anything_to_relieve_the_pain = "Pain Relief Recommendation",
+  x18_when_was_the_pain_relief_recommendation_done = "Pain Relief Recommendation Timing",
+  x19_what_pain_relief_was_recommended_tick_all_that_apply = "Pain Relief Option Recommended",
+  x20_if_nothing_was_recommended_by_your_orthodontists_did_you_do_anything_to_relieve_the_pain = "Action Taken for Pain Relief in the absence of Orthodontist recommendation",
+  x22_do_you_feel_a_standard_pain_management_protocol_should_be_formulated_for_managing_pain_for_patients_immediately_after_braces_installation_or_after_delivery_of_orthodontic_appliances = "Opinion on Orthodontic Pain Management Protocol"
+)
+
+# Create a summary table
+df %>%
+  select(
+    x16_did_your_orthodontist_mention_that_you_would_experience_any_form_of_pain_discomfort_following_your_appliance_installation_delivery,
+    x17_did_he_she_recommend_anything_to_relieve_the_pain,
+    x18_when_was_the_pain_relief_recommendation_done,
+    x19_what_pain_relief_was_recommended_tick_all_that_apply,
+    x20_if_nothing_was_recommended_by_your_orthodontists_did_you_do_anything_to_relieve_the_pain,
+    x22_do_you_feel_a_standard_pain_management_protocol_should_be_formulated_for_managing_pain_for_patients_immediately_after_braces_installation_or_after_delivery_of_orthodontic_appliances
+  ) %>%
+  tbl_summary(
+    label = labels,
+    statistic = list(
+      all_categorical() ~ "{n} ({p}%)",
+      all_continuous() ~ "{mean} ± {sd}"
+    ),
+    digits = list(
+      all_continuous() ~ 2,
+      all_categorical() ~ 1
+    )
+  ) %>%
+  bold_labels() %>%
+  italicize_levels()
+
+
+
+
+# Define the levels for the Likert scale
+likert_levels <- c("Not at all", "A little bit", "Moderately", "Quite", "Extremely")
+
+# Selecting the relevant variables
+selected_vars <- df %>%
+  select(
+    x10_how_would_you_rate_the_effect_of_the_pain_on_the_following_activities_work,
+    x10_how_would_you_rate_the_effect_of_the_pain_on_the_following_activities_performing_household_chores,
+    x10_how_would_you_rate_the_effect_of_the_pain_on_the_following_activities_yard_work_or_shopping,
+    x10_how_would_you_rate_the_effect_of_the_pain_on_the_following_activities_socializing_with_friends,
+    x10_how_would_you_rate_the_effect_of_the_pain_on_the_following_activities_recreation_and_hobbies,
+    x10_how_would_you_rate_the_effect_of_the_pain_on_the_following_activities_physical_exercise,
+    x10_how_would_you_rate_the_effect_of_the_pain_on_the_following_activities_sleep,
+    x10_how_would_you_rate_the_effect_of_the_pain_on_the_following_activities_mental_efficiency,
+    x10_how_would_you_rate_the_effect_of_the_pain_on_the_following_activities_talking,
+    x10_how_would_you_rate_the_effect_of_the_pain_on_the_following_activities_brushing,
+    x10_how_would_you_rate_the_effect_of_the_pain_on_the_following_activities_smiling,
+    x10_how_would_you_rate_the_effect_of_the_pain_on_the_following_activities_eating_chewing,
+    x10_how_would_you_rate_the_effect_of_the_pain_on_the_following_activities_physical_activities
+  )
+
+# Remapping variable names
+selected_vars <- selected_vars %>%
+  pivot_longer(cols = everything(), names_to = "Item", values_to = "value") %>%
+  mutate(
+    Item = case_when(
+      Item == "x10_how_would_you_rate_the_effect_of_the_pain_on_the_following_activities_work" ~ "Work",
+      Item == "x10_how_would_you_rate_the_effect_of_the_pain_on_the_following_activities_performing_household_chores" ~ "Performing Household Chores",
+      Item == "x10_how_would_you_rate_the_effect_of_the_pain_on_the_following_activities_yard_work_or_shopping" ~ "Yard Work or Shopping",
+      Item == "x10_how_would_you_rate_the_effect_of_the_pain_on_the_following_activities_socializing_with_friends" ~ "Socializing with Friends",
+      Item == "x10_how_would_you_rate_the_effect_of_the_pain_on_the_following_activities_recreation_and_hobbies" ~ "Recreation and Hobbies",
+      Item == "x10_how_would_you_rate_the_effect_of_the_pain_on_the_following_activities_physical_exercise" ~ "Physical Exercise",
+      Item == "x10_how_would_you_rate_the_effect_of_the_pain_on_the_following_activities_sleep" ~ "Sleep",
+      Item == "x10_how_would_you_rate_the_effect_of_the_pain_on_the_following_activities_mental_efficiency" ~ "Mental Efficiency",
+      Item == "x10_how_would_you_rate_the_effect_of_the_pain_on_the_following_activities_talking" ~ "Talking",
+      Item == "x10_how_would_you_rate_the_effect_of_the_pain_on_the_following_activities_brushing" ~ "Brushing",
+      Item == "x10_how_would_you_rate_the_effect_of_the_pain_on_the_following_activities_smiling" ~ "Smiling",
+      Item == "x10_how_would_you_rate_the_effect_of_the_pain_on_the_following_activities_eating_chewing" ~ "Eating/Chewing",
+      Item == "x10_how_would_you_rate_the_effect_of_the_pain_on_the_following_activities_physical_activities" ~ "Physical Activities",
+      TRUE ~ Item
+    ),
+    value = factor(value, levels = likert_levels)
+  )
+
+# Create the Likert table
+likert_table <- selected_vars %>%
+  tbl_summary(
+    by = value,
+    digits = list(all_categorical() ~ 1),
+    percent = "row",
+    label = list(Item ~ "**Activities**")
+  ) %>%
+  modify_header(label = "**Effect of Pain on Activities**") %>%
+  as_gt()
+
+# Print the table
+print(likert_table)
+
+
+# "Flat Coding"
+
+# Define the levels for the Likert scale
+likert_levels <- c("Not at all", "A little bit", "Moderately", "Quite", "Extremely")
+
+# Selecting the relevant variables
+selected_vars <- df %>%
+  select(
+    x10_how_would_you_rate_the_effect_of_the_pain_on_the_following_activities_work,
+    x10_how_would_you_rate_the_effect_of_the_pain_on_the_following_activities_performing_household_chores,
+    x10_how_would_you_rate_the_effect_of_the_pain_on_the_following_activities_yard_work_or_shopping,
+    x10_how_would_you_rate_the_effect_of_the_pain_on_the_following_activities_socializing_with_friends,
+    x10_how_would_you_rate_the_effect_of_the_pain_on_the_following_activities_recreation_and_hobbies,
+    x10_how_would_you_rate_the_effect_of_the_pain_on_the_following_activities_physical_exercise,
+    x10_how_would_you_rate_the_effect_of_the_pain_on_the_following_activities_sleep,
+    x10_how_would_you_rate_the_effect_of_the_pain_on_the_following_activities_mental_efficiency,
+    x10_how_would_you_rate_the_effect_of_the_pain_on_the_following_activities_talking,
+    x10_how_would_you_rate_the_effect_of_the_pain_on_the_following_activities_brushing,
+    x10_how_would_you_rate_the_effect_of_the_pain_on_the_following_activities_smiling,
+    x10_how_would_you_rate_the_effect_of_the_pain_on_the_following_activities_eating_chewing,
+    x10_how_would_you_rate_the_effect_of_the_pain_on_the_following_activities_physical_activities
+  )
+
+# Remapping variable names and converting responses
+selected_vars <- selected_vars %>%
+  pivot_longer(cols = everything(), names_to = "Item", values_to = "value") %>%
+  mutate(
+    Item = case_when(
+      Item == "x10_how_would_you_rate_the_effect_of_the_pain_on_the_following_activities_work" ~ "Work",
+      Item == "x10_how_would_you_rate_the_effect_of_the_pain_on_the_following_activities_performing_household_chores" ~ "Performing Household Chores",
+      Item == "x10_how_would_you_rate_the_effect_of_the_pain_on_the_following_activities_yard_work_or_shopping" ~ "Yard Work or Shopping",
+      Item == "x10_how_would_you_rate_the_effect_of_the_pain_on_the_following_activities_socializing_with_friends" ~ "Socializing with Friends",
+      Item == "x10_how_would_you_rate_the_effect_of_the_pain_on_the_following_activities_recreation_and_hobbies" ~ "Recreation and Hobbies",
+      Item == "x10_how_would_you_rate_the_effect_of_the_pain_on_the_following_activities_physical_exercise" ~ "Physical Exercise",
+      Item == "x10_how_would_you_rate_the_effect_of_the_pain_on_the_following_activities_sleep" ~ "Sleep",
+      Item == "x10_how_would_you_rate_the_effect_of_the_pain_on_the_following_activities_mental_efficiency" ~ "Mental Efficiency",
+      Item == "x10_how_would_you_rate_the_effect_of_the_pain_on_the_following_activities_talking" ~ "Talking",
+      Item == "x10_how_would_you_rate_the_effect_of_the_pain_on_the_following_activities_brushing" ~ "Brushing",
+      Item == "x10_how_would_you_rate_the_effect_of_the_pain_on_the_following_activities_smiling" ~ "Smiling",
+      Item == "x10_how_would_you_rate_the_effect_of_the_pain_on_the_following_activities_eating_chewing" ~ "Eating/Chewing",
+      Item == "x10_how_would_you_rate_the_effect_of_the_pain_on_the_following_activities_physical_activities" ~ "Physical Activities",
+      TRUE ~ Item
+    ),
+    value = ifelse(value == "Not at all", "No", "Yes")
+  )
+
+# Create the summary table
+summary_table <- selected_vars %>%
+  tbl_summary(
+    by = value,
+    digits = list(all_categorical() ~ 1),
+    percent = "row",
+    label = list(Item ~ "**Activities**")
+  ) %>%
+  modify_header(label = "**Effect of Pain on Activities**") %>%
+  as_gt()
+
+# Print the table
+print(summary_table)
+
+
+
+
+df %>%
+  select(
+    x12_when_you_are_in_pain_do_you_require_family_support_and_encouragment,
+    x13_following_orthodontic_treatment_did_you_experience_tension_or_anxiety,
+    x14_following_orthodontic_appliance_activation_set_up_were_you_irritable_and_upset,
+    x15_following_orthodontic_appliance_activation_set_up_were_you_depressed_or_discouraged
+  ) %>%
+  tbl_summary(
+    label = list(
+      x12_when_you_are_in_pain_do_you_require_family_support_and_encouragment ~ "Require Family Support and Encouragement",
+      x13_following_orthodontic_treatment_did_you_experience_tension_or_anxiety ~ "Experience Tension or Anxiety",
+      x14_following_orthodontic_appliance_activation_set_up_were_you_irritable_and_upset ~ "Irritable and Upset",
+      x15_following_orthodontic_appliance_activation_set_up_were_you_depressed_or_discouraged ~ "Depressed or Discouraged"
+    ),
+    missing = "no",
+    digits = list(all_categorical() ~ 1)
+  )
+
+
+# Plot 1: Comparison of age categories by sex
+ggbetweenstats(
+  data  = df,
+  x     = x2_sex,
+  y     = x8_if_yes_how_will_you_rate_the_pain_discomfort_on_a_scale_of_0_to_10_0_meaning_no_pain_and_10_the_most_pain,
+  title = "Comparison of pain rating by sex",
+  xlab  = "Sex",
+  ylab  = "Pain/Discomfort Rating (0-10)"
+)
+
+
+
+# Assuming age_category is a factor variable in your dataframe
+df$age_category <- factor(df$age_category, levels = c("Children (0 - 12)", "Adolescent (13 - 19)", "Young Adult (20 - 39)", "Middle Aged Adult (40 - 59)", "Old Adult (60+)"))
+
+# Plot 2: Comparison of age categories
+ggbetweenstats(
+  data  = df,
+  x     = age_category,
+  y     = x8_if_yes_how_will_you_rate_the_pain_discomfort_on_a_scale_of_0_to_10_0_meaning_no_pain_and_10_the_most_pain,
+  title = "Comparison of pain rating by age category",
+  xlab  = "Age Category",
+  ylab  = "Pain/Discomfort Rating (0-10)"
+)
